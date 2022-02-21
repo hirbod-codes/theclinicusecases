@@ -20,7 +20,7 @@ class AccountsManagement
         return $db->getAccounts($lastVisitId, $count);
     }
 
-    public function checkAccountsReadPrivilege(DSUser $user): void
+    private function checkAccountsReadPrivilege(DSUser $user): void
     {
         if (!$user->isAuthenticated()) {
             throw new UserIsNotAuthenticated();
