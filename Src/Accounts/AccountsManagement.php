@@ -14,6 +14,10 @@ use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 class AccountsManagement
 {
     /**
+     * @param integer $lastVisitId
+     * @param integer $count
+     * @param DSUser $user
+     * @param IDataBaseRetrieveAccounts $db
      * @return \TheClinic\DataStructures\User\DSUser[]
      */
     public function getAccounts(int $lastVisitId, int $count, DSUser $user, IDataBaseRetrieveAccounts $db): array
