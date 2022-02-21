@@ -1,0 +1,33 @@
+{
+    "name": "hirbod-codes/theclinicusecases",
+    "type": "project",
+    "description": "The use cases of theclinic project.",
+    "authors": [
+        {
+            "name": "Hirbod Khatami",
+            "email": "hirbod.khatami.words@gmail.com"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.0",
+        "hirbod-codes/theclinic": "^1.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "dev-master",
+        "fakerphp/faker": "^1.15",
+        "phpunit/phpunit": "9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "TheClinic\\": "Src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "Tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
