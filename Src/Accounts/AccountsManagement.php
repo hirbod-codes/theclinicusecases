@@ -39,7 +39,7 @@ class AccountsManagement
         }
     }
 
-    public function createAccount(array $input, DSUser $user, IDataBaseCreateAccount $db)
+    public function createAccount(array $input, DSUser $user, IDataBaseCreateAccount $db): void
     {
         $this->checkAccountCreatePrivilege($user);
 
