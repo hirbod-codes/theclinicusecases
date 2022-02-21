@@ -52,8 +52,8 @@ class AccountsManagement
 
         $role = $user->getRole();
 
-        if ($role->privilegeExists("accountsCreate") && $role->getPrivilegeValue("accountsCreate") === true) {
-        } elseif (!$role->privilegeExists("accountsCreate")) {
+        if ($role->privilegeExists("accountCreate") && $role->getPrivilegeValue("accountCreate") === true) {
+        } elseif (!$role->privilegeExists("accountCreate")) {
             throw new PrivilegeNotFound();
         } else {
             throw new UserIsNotAuthorized();

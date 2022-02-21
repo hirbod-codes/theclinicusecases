@@ -106,8 +106,8 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
         $rule = Mockery::mock(IUserRule::class);
-        $rule->shouldReceive("privilegeExists")->with("accountsCreate")->andReturn(true);
-        $rule->shouldReceive("getPrivilegeValue")->with("accountsCreate")->andReturn(true);
+        $rule->shouldReceive("privilegeExists")->with("accountCreate")->andReturn(true);
+        $rule->shouldReceive("getPrivilegeValue")->with("accountCreate")->andReturn(true);
 
         /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
         $user = Mockery::mock(DSUser::class);
@@ -119,8 +119,8 @@ class AccountsManagementTest extends TestCase
         try {
             /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
             $rule = Mockery::mock(IUserRule::class);
-            $rule->shouldReceive("privilegeExists")->with("accountsCreate")->andReturn(false);
-            $rule->shouldReceive("getPrivilegeValue")->with("accountsCreate")->andReturn(true);
+            $rule->shouldReceive("privilegeExists")->with("accountCreate")->andReturn(false);
+            $rule->shouldReceive("getPrivilegeValue")->with("accountCreate")->andReturn(true);
 
             /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
             $user = Mockery::mock(DSUser::class);
@@ -136,8 +136,8 @@ class AccountsManagementTest extends TestCase
         try {
             /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
             $rule = Mockery::mock(IUserRule::class);
-            $rule->shouldReceive("privilegeExists")->with("accountsCreate")->andReturn(true);
-            $rule->shouldReceive("getPrivilegeValue")->with("accountsCreate")->andReturn(false);
+            $rule->shouldReceive("privilegeExists")->with("accountCreate")->andReturn(true);
+            $rule->shouldReceive("getPrivilegeValue")->with("accountCreate")->andReturn(false);
 
             /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
             $user = Mockery::mock(DSUser::class);
@@ -153,8 +153,8 @@ class AccountsManagementTest extends TestCase
         try {
             /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
             $rule = Mockery::mock(IUserRule::class);
-            $rule->shouldReceive("privilegeExists")->with("accountsCreate")->andReturn(true);
-            $rule->shouldReceive("getPrivilegeValue")->with("accountsCreate")->andReturn(true);
+            $rule->shouldReceive("privilegeExists")->with("accountCreate")->andReturn(true);
+            $rule->shouldReceive("getPrivilegeValue")->with("accountCreate")->andReturn(true);
 
             /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
             $user = Mockery::mock(DSUser::class);
