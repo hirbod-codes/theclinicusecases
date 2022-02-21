@@ -14,17 +14,17 @@ use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 class AccountsManagement
 {
     /**
-     * @param integer $lastVisitId
+     * @param integer $lastAccountId
      * @param integer $count
      * @param DSUser $user
      * @param IDataBaseRetrieveAccounts $db
      * @return \TheClinic\DataStructures\User\DSUser[]
      */
-    public function getAccounts(int $lastVisitId, int $count, DSUser $user, IDataBaseRetrieveAccounts $db): array
+    public function getAccounts(int $lastAccountId = null, int $count, DSUser $user, IDataBaseRetrieveAccounts $db): array
     {
         $this->checkAccountsReadPrivilege($user);
 
-        return $db->getAccounts($lastVisitId, $count);
+        return $db->getAccounts($lastAccountId, $count);
     }
 
     private function checkAccountsReadPrivilege(DSUser $user): void
