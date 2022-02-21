@@ -4,6 +4,7 @@ namespace TheClinicUseCases\Accounts;
 
 use TheClinic\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount;
+use TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthenticated;
@@ -54,6 +55,29 @@ class AccountsManagement
 
         if ($role->privilegeExists("accountCreate") && $role->getPrivilegeValue("accountCreate") === true) {
         } elseif (!$role->privilegeExists("accountCreate")) {
+            throw new PrivilegeNotFound();
+        } else {
+            throw new UserIsNotAuthorized();
+        }
+    }
+
+    public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
+    {
+        $this->checkAccountsDeletePrivilege($user);
+
+        $db->deleteAccount($targetUser);
+    }
+
+    private function checkAccountsDeletePrivilege(DSUser $user): void
+    {
+        if (!$user->isAuthenticated()) {
+            throw new UserIsNotAuthenticated();
+        }
+
+        $role = $user->getRole();
+
+        if ($role->privilegeExists("accountDelete") && $role->getPrivilegeValue("accountDelete") === true) {
+        } elseif (!$role->privilegeExists("accountDelete")) {
             throw new PrivilegeNotFound();
         } else {
             throw new UserIsNotAuthorized();
