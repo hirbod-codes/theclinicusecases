@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "hirbod-codes/theclinic",
-            "version": "v1.1.1",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hirbod-codes/theclinic.git",
-                "reference": "11ed9012b195fde3ebdc97e3e04be33b236e5cee"
+                "reference": "cbacf72ec3f487e852d2a6e7600af5ad415a6dbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hirbod-codes/theclinic/zipball/11ed9012b195fde3ebdc97e3e04be33b236e5cee",
-                "reference": "11ed9012b195fde3ebdc97e3e04be33b236e5cee",
+                "url": "https://api.github.com/repos/hirbod-codes/theclinic/zipball/cbacf72ec3f487e852d2a6e7600af5ad415a6dbd",
+                "reference": "cbacf72ec3f487e852d2a6e7600af5ad415a6dbd",
                 "shasum": ""
             },
             "require": {
@@ -47,9 +47,9 @@
             "description": "The business entities of this project.",
             "support": {
                 "issues": "https://github.com/hirbod-codes/theclinic/issues",
-                "source": "https://github.com/hirbod-codes/theclinic/tree/v1.1.1"
+                "source": "https://github.com/hirbod-codes/theclinic/tree/v1.2.0"
             },
-            "time": "2022-02-21T08:20:05+00:00"
+            "time": "2022-02-21T11:22:43+00:00"
         }
     ],
     "packages-dev": [
