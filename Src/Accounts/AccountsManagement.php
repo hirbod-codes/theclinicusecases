@@ -41,12 +41,12 @@ class AccountsManagement
 
     public function createAccount(array $input, DSUser $user, IDataBaseCreateAccount $db)
     {
-        $this->checkAccountsCreatePrivilege($user);
+        $this->checkAccountCreatePrivilege($user);
 
         $db->createAccount($input);
     }
 
-    private function checkAccountsCreatePrivilege(DSUser $user): void
+    private function checkAccountCreatePrivilege(DSUser $user): void
     {
         if (!$user->isAuthenticated()) {
             throw new UserIsNotAuthenticated();
@@ -64,12 +64,12 @@ class AccountsManagement
 
     public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
     {
-        $this->checkAccountsDeletePrivilege($user);
+        $this->checkAccountDeletePrivilege($user);
 
         $db->deleteAccount($targetUser);
     }
 
-    private function checkAccountsDeletePrivilege(DSUser $user): void
+    private function checkAccountDeletePrivilege(DSUser $user): void
     {
         if (!$user->isAuthenticated()) {
             throw new UserIsNotAuthenticated();
@@ -87,12 +87,12 @@ class AccountsManagement
 
     public function updateAccount(array $input, DSUser $user, IDataBaseUpdateAccount $db): void
     {
-        $this->checkAccountsUpdatePrivilege($user);
+        $this->checkAccountUpdatePrivilege($user);
 
         $db->updateAccount($input);
     }
 
-    private function checkAccountsUpdatePrivilege(DSUser $user): void
+    private function checkAccountUpdatePrivilege(DSUser $user): void
     {
         if (!$user->isAuthenticated()) {
             throw new UserIsNotAuthenticated();
