@@ -76,7 +76,7 @@ class AccountsManagementTest extends TestCase
             (new AccountsManagement)->getAccounts($id, $count, $user, $db);
             throw new \RuntimeException("Failure!!!", 500);
         } catch (UserIsNotAuthorized $th) {
-            $this->assertEquals("The current authenticated user is not authorized for reading accounts.", $th->getMessage());
+            $this->assertEquals("The current authenticated user is not authorized for this action.", $th->getMessage());
         }
 
         try {
