@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TheClinic\\": "Src/"
+            "TheClinicUseCases\\": "Src/"
         }
     },
     "autoload-dev": {
