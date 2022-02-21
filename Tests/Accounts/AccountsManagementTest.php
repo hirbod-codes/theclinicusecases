@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use TheClinic\DataStructures\User\DSUser;
 use TheClinic\DataStructures\User\IUserRule;
 use TheClinicUseCases\Accounts\AccountsManagement;
+use TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthenticated;
@@ -91,6 +92,76 @@ class AccountsManagementTest extends TestCase
             $user->shouldReceive("getRole")->andReturn($rule);
 
             (new AccountsManagement)->getAccounts($id, $count, $user, $db);
+            throw new \RuntimeException("Failure!!!", 500);
+        } catch (UserIsNotAuthenticated $th) {
+            $this->assertEquals("The current authenticated user is not authenticated.", $th->getMessage());
+        }
+    }
+
+    public function testCreateAccount(): void
+    {
+        /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseCreateAccount::class);
+        $db->shouldReceive("createAccount")->with([]);
+
+        /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
+        $rule = Mockery::mock(IUserRule::class);
+        $rule->shouldReceive("privilegeExists")->with("accountsCreate")->andReturn(true);
+        $rule->shouldReceive("getPrivilegeValue")->with("accountsCreate")->andReturn(true);
+
+        /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+        $user = Mockery::mock(DSUser::class);
+        $user->shouldReceive("isAuthenticated")->andReturn(true);
+        $user->shouldReceive("getRole")->andReturn($rule);
+
+        (new AccountsManagement)->createAccount([], $user, $db);
+
+        try {
+            /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
+            $rule = Mockery::mock(IUserRule::class);
+            $rule->shouldReceive("privilegeExists")->with("accountsCreate")->andReturn(false);
+            $rule->shouldReceive("getPrivilegeValue")->with("accountsCreate")->andReturn(true);
+
+            /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+            $user = Mockery::mock(DSUser::class);
+            $user->shouldReceive("isAuthenticated")->andReturn(true);
+            $user->shouldReceive("getRole")->andReturn($rule);
+
+            (new AccountsManagement)->createAccount([], $user, $db);
+            throw new \RuntimeException("Failure!!!", 500);
+        } catch (PrivilegeNotFound $th) {
+            $this->assertEquals("There is no such privilege.", $th->getMessage());
+        }
+
+        try {
+            /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
+            $rule = Mockery::mock(IUserRule::class);
+            $rule->shouldReceive("privilegeExists")->with("accountsCreate")->andReturn(true);
+            $rule->shouldReceive("getPrivilegeValue")->with("accountsCreate")->andReturn(false);
+
+            /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+            $user = Mockery::mock(DSUser::class);
+            $user->shouldReceive("isAuthenticated")->andReturn(true);
+            $user->shouldReceive("getRole")->andReturn($rule);
+
+            (new AccountsManagement)->createAccount([], $user, $db);
+            throw new \RuntimeException("Failure!!!", 500);
+        } catch (UserIsNotAuthorized $th) {
+            $this->assertEquals("The current authenticated user is not authorized for this action.", $th->getMessage());
+        }
+
+        try {
+            /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
+            $rule = Mockery::mock(IUserRule::class);
+            $rule->shouldReceive("privilegeExists")->with("accountsCreate")->andReturn(true);
+            $rule->shouldReceive("getPrivilegeValue")->with("accountsCreate")->andReturn(true);
+
+            /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+            $user = Mockery::mock(DSUser::class);
+            $user->shouldReceive("isAuthenticated")->andReturn(false);
+            $user->shouldReceive("getRole")->andReturn($rule);
+
+            (new AccountsManagement)->createAccount([], $user, $db);
             throw new \RuntimeException("Failure!!!", 500);
         } catch (UserIsNotAuthenticated $th) {
             $this->assertEquals("The current authenticated user is not authenticated.", $th->getMessage());
