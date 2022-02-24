@@ -2,7 +2,9 @@
 
 namespace TheClinicUseCases\Accounts\Interfaces;
 
+use TheClinic\DataStructures\User\DSUser;
+
 interface IDataBaseUpdateAccount
 {
-    public function updateAccount(array $input): void;
+    public function updateAccount(array $input): DSUser;
 }
