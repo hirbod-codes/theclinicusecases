@@ -19,9 +19,9 @@ class AccountsManagementTest extends TestCase
 {
     private Generator $faker;
 
-    private DSUser $user;
+    private DSUser|\Mockery\MockInterface $user;
 
-    private Authentication $authentication;
+    private Authentication|\Mockery\MockInterface $authentication;
 
     protected function setUp(): void
     {
@@ -60,11 +60,18 @@ class AccountsManagementTest extends TestCase
 
     public function testGetSelfAccounts(): void
     {
+        $id = $this->faker->numberBetween(1, 1000);
+        $this->user->shouldReceive("getId")->andReturn($id);
+
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountRead");
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getSelfAccounts($this->user);
+        /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseRetrieveAccounts::class);
+        $db->shouldReceive("getAccount")->with($this->user->getId())->andReturn($this->user);
+
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getSelfAccounts($this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
@@ -97,6 +104,20 @@ class AccountsManagementTest extends TestCase
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountDelete");
 
         $account = (new AccountsManagement($this->authentication, $privilegesManagement))->deleteAccount($targetUser, $this->user, $db);
+        $this->assertNull($account);
+    }
+
+    public function testDeleteSelfAccount(): void
+    {
+        /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseDeleteAccount::class);
+        $db->shouldReceive("deleteAccount")->with($this->user);
+
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfA ccountDelete");
+
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->deleteSelfAccount($this->user, $db);
         $this->assertNull($account);
     }
 

@@ -65,6 +65,14 @@ class AccountsManagement
         $db->deleteAccount($targetUser);
     }
 
+    public function deleteSelfAccount(DSUser $user, IDataBaseDeleteAccount $db): void
+    {
+        $this->authentication->check($user);
+        $this->privilegesManagement->checkBool($user, "selfAccountDelete");
+
+        $db->deleteAccount($user);
+    }
+
     public function updateAccount(array $input, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
         $this->authentication->check($user);
