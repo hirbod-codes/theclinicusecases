@@ -41,6 +41,14 @@ class AccountsManagement
         return $db->getAccounts($lastAccountId, $count);
     }
 
+    public function getSelfAccounts(DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
+    {
+        $this->authentication->check($user);
+        $this->privilegesManagement->checkBool($user, "selfAccountRead");
+
+        return $db->getAccount($user->getId());
+    }
+
     public function createAccount(array $input, DSUser $user, IDataBaseCreateAccount $db): DSUser
     {
         $this->authentication->check($user);

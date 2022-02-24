@@ -58,6 +58,16 @@ class AccountsManagementTest extends TestCase
         $this->assertIsArray($accounts);
     }
 
+    public function testGetSelfAccounts(): void
+    {
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountRead");
+
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getSelfAccounts($this->user);
+        $this->assertInstanceOf(DSUser::class, $account);
+    }
+
     public function testCreateAccount(): void
     {
         $input = [];
