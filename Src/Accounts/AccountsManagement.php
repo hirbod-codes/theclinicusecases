@@ -70,11 +70,11 @@ class AccountsManagement
         $db->deleteAccount($user);
     }
 
-    public function updateAccount(array $input, DSUser $user, IDataBaseUpdateAccount $db): DSUser
+    public function updateAccount(array $input, DSUser $targetUser, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountUpdate");
 
-        return $db->updateAccount($input);
+        return $db->updateAccount($input, $targetUser);
     }
 }
