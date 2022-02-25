@@ -2,10 +2,10 @@
 
 namespace TheClinicUseCases\Orders\Interfaces;
 
-use TheClinic\DataStructures\Order\DSLaserOrder;
-use TheClinic\DataStructures\Order\DSPackages;
-use TheClinic\DataStructures\Order\DSParts;
-use TheClinic\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\Order\DSLaserOrder;
+use TheClinicDataStructures\DataStructures\Order\DSPackages;
+use TheClinicDataStructures\DataStructures\Order\DSParts;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseCreateLaserOrder
 {

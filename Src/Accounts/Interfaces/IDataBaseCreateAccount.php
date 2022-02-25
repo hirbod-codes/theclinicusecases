@@ -2,7 +2,7 @@
 
 namespace TheClinicUseCases\Accounts\Interfaces;
 
-use TheClinic\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseCreateAccount
 {

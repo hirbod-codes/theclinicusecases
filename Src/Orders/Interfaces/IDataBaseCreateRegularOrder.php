@@ -2,8 +2,8 @@
 
 namespace TheClinicUseCases\Orders\Interfaces;
 
-use TheClinic\DataStructures\Order\DSOrder;
-use TheClinic\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\Order\DSOrder;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseCreateRegularOrder
 {

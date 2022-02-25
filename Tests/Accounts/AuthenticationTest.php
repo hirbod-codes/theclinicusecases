@@ -6,7 +6,7 @@ use Faker\Factory;
 use Faker\Generator;
 use Mockery;
 use Tests\TestCase;
-use TheClinic\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthenticated;
 
@@ -21,14 +21,14 @@ class AuthenticationTest extends TestCase
 
     public function testCheck(): void
     {
-        /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
         $dsUser = Mockery::mock(DSUser::class);
         $dsUser->shouldReceive("isAuthenticated")->andReturn(true);
 
         $result = (new Authentication)->check($dsUser);
         $this->assertNull($result);
 
-        /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
         $dsUser = Mockery::mock(DSUser::class);
         $dsUser->shouldReceive("isAuthenticated")->andReturn(false);
 

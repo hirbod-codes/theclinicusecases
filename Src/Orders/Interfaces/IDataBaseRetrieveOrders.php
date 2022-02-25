@@ -2,7 +2,7 @@
 
 namespace TheClinicUseCases\Orders\Interfaces;
 
-use TheClinic\DataStructures\Order\DSOrders;
+use TheClinicDataStructures\DataStructures\Order\DSOrders;
 
 interface IDataBaseRetrieveOrders
 {

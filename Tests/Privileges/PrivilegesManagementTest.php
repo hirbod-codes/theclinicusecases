@@ -6,8 +6,8 @@ use Faker\Factory;
 use Faker\Generator;
 use Mockery;
 use Tests\TestCase;
-use TheClinic\DataStructures\User\DSUser;
-use TheClinic\DataStructures\User\IUserRule;
+use TheClinicDataStructures\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\IUserRule;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
@@ -25,12 +25,12 @@ class PrivilegesManagementTest extends TestCase
     {
         $privilege = "ExampleBooleanPrivilege";
 
-        /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
+        /** @var \TheClinicDataStructures\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
         $rule = Mockery::mock(IUserRule::class);
         $rule->shouldReceive("privilegeExists")->with($privilege)->andReturn(true);
         $rule->shouldReceive("getPrivilegeValue")->with($privilege)->andReturn(true);
 
-        /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
         $dsUser = Mockery::mock(DSUser::class);
         $dsUser->shouldReceive("getRule")->andReturn($rule);
 
@@ -38,12 +38,12 @@ class PrivilegesManagementTest extends TestCase
         $this->assertNull($result);
 
         try {
-            /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
+            /** @var \TheClinicDataStructures\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
             $rule = Mockery::mock(IUserRule::class);
             $rule->shouldReceive("privilegeExists")->with($privilege)->andReturn(false);
             $rule->shouldReceive("getPrivilegeValue")->with($privilege)->andReturn(true);
 
-            /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
+            /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
             $dsUser = Mockery::mock(DSUser::class);
             $dsUser->shouldReceive("getRule")->andReturn($rule);
 
@@ -53,12 +53,12 @@ class PrivilegesManagementTest extends TestCase
         }
 
         try {
-            /** @var \TheClinic\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
+            /** @var \TheClinicDataStructures\DataStructures\User\IUserRule|\Mockery\MockInterface $rule */
             $rule = Mockery::mock(IUserRule::class);
             $rule->shouldReceive("privilegeExists")->with($privilege)->andReturn(true);
             $rule->shouldReceive("getPrivilegeValue")->with($privilege)->andReturn(false);
 
-            /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
+            /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $dsUser */
             $dsUser = Mockery::mock(DSUser::class);
             $dsUser->shouldReceive("getRule")->andReturn($rule);
 

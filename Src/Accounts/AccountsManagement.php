@@ -2,14 +2,11 @@
 
 namespace TheClinicUseCases\Accounts;
 
-use TheClinic\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount;
-use TheClinicUseCases\Exceptions\PrivilegeNotFound;
-use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthenticated;
-use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class AccountsManagement
@@ -31,7 +28,7 @@ class AccountsManagement
      * @param integer $count
      * @param DSUser $user
      * @param IDataBaseRetrieveAccounts $db
-     * @return \TheClinic\DataStructures\User\DSUser[]
+     * @return \TheClinicDataStructures\DataStructures\User\DSUser[]
      */
     public function getAccounts(int $lastAccountId = null, int $count, DSUser $user, IDataBaseRetrieveAccounts $db): array
     {

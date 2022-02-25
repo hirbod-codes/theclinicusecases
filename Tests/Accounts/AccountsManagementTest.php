@@ -6,7 +6,7 @@ use Faker\Factory;
 use Faker\Generator;
 use Mockery;
 use Tests\TestCase;
-use TheClinic\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\AccountsManagement;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount;
@@ -36,7 +36,7 @@ class AccountsManagementTest extends TestCase
 
     private function makeUser(): DSUser
     {
-        /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
         $user = Mockery::mock(DSUser::class);
         return $user;
     }
@@ -93,7 +93,7 @@ class AccountsManagementTest extends TestCase
 
     public function testDeleteAccount(): void
     {
-        /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $targetUser */
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $targetUser */
         $targetUser = Mockery::mock(DSUser::class);
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseDeleteAccount::class);
@@ -115,7 +115,7 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfA ccountDelete");
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountDelete");
 
         $account = (new AccountsManagement($this->authentication, $privilegesManagement))->deleteSelfAccount($this->user, $db);
         $this->assertNull($account);

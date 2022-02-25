@@ -2,15 +2,15 @@
 
 namespace TheClinicUseCases\Accounts;
 
-use TheClinic\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthenticated;
 
 class Authentication
 {
     /**
-     * @param DSUser $user
+     * @param \TheClinicDataStructures\DataStructures\User\DSUser $user
      * @return void
-     * @throws UserIsNotAuthenticated
+     * @throws \TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthenticated
      */
     public function check(DSUser $user): void
     {

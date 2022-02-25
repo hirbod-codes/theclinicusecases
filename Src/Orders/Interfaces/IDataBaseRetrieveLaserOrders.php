@@ -2,7 +2,7 @@
 
 namespace TheClinicUseCases\Orders\Interfaces;
 
-use TheClinic\DataStructures\Order\DSLaserOrders;
+use TheClinicDataStructures\DataStructures\Order\DSLaserOrders;
 
 interface IDataBaseRetrieveLaserOrders
 {

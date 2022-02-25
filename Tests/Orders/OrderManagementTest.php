@@ -6,13 +6,13 @@ use Faker\Factory;
 use Faker\Generator;
 use Mockery;
 use Tests\TestCase;
-use TheClinic\DataStructures\Order\DSLaserOrder;
-use TheClinic\DataStructures\Order\DSLaserOrders;
-use TheClinic\DataStructures\Order\DSOrder;
-use TheClinic\DataStructures\Order\DSOrders;
-use TheClinic\DataStructures\Order\DSPackages;
-use TheClinic\DataStructures\Order\DSParts;
-use TheClinic\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\Order\DSLaserOrder;
+use TheClinicDataStructures\DataStructures\Order\DSLaserOrders;
+use TheClinicDataStructures\DataStructures\Order\DSOrder;
+use TheClinicDataStructures\DataStructures\Order\DSOrders;
+use TheClinicDataStructures\DataStructures\Order\DSPackages;
+use TheClinicDataStructures\DataStructures\Order\DSParts;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinic\Order\ICalculateLaserOrder;
 use TheClinic\Order\ICalculateRegularOrder;
 use TheClinic\Order\Laser\ILaserPriceCalculator;
@@ -61,7 +61,7 @@ class OrderManagementTest extends TestCase
 
     private function makeUser(): DSUser
     {
-        /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
         $user = Mockery::mock(DSUser::class);
         return $user;
     }
@@ -120,7 +120,7 @@ class OrderManagementTest extends TestCase
         $this->iCalculateRegularOrder->shouldReceive("calculatePrice")->andReturn($price);
         $this->iCalculateRegularOrder->shouldReceive("calculateTimeConsumption")->andReturn($timeConsumption);
 
-        /** @var \TheClinic\DataStructures\Order\DSOrder|\Mockery\MockInterface $dsOrder */
+        /** @var \TheClinicDataStructures\DataStructures\Order\DSOrder|\Mockery\MockInterface $dsOrder */
         $dsOrder = Mockery::mock(DSOrder::class);
 
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder|\Mockery\MockInterface $db */
@@ -143,17 +143,17 @@ class OrderManagementTest extends TestCase
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "laserOrderCreate");
 
-        /** @var \TheClinic\DataStructures\User\DSUser|\Mockery\MockInterface $targetUser */
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $targetUser */
         $targetUser = $this->makeUser();
         $targetUser->shouldReceive("getGender")->twice()->andReturn($gender);
 
-        /** @var \TheClinic\DataStructures\Order\DSParts|\Mockery\MockInterface $dsParts */
+        /** @var \TheClinicDataStructures\DataStructures\Order\DSParts|\Mockery\MockInterface $dsParts */
         $dsParts = Mockery::mock(DSParts::class);
         $dsParts->shouldReceive("getGender")->once()->andReturn($gender);
-        /** @var \TheClinic\DataStructures\Order\DSPackages|\Mockery\MockInterface $dsPackages */
+        /** @var \TheClinicDataStructures\DataStructures\Order\DSPackages|\Mockery\MockInterface $dsPackages */
         $dsPackages = Mockery::mock(DSPackages::class);
         $dsPackages->shouldReceive("getGender")->once()->andReturn($gender);
-        /** @var \TheClinic\DataStructures\Order\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
+        /** @var \TheClinicDataStructures\DataStructures\Order\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
         $dsLaserOrder = Mockery::mock(DSLaserOrder::class);
 
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder|\Mockery\MockInterface $db */
