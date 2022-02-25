@@ -86,4 +86,12 @@ class AccountsManagement
 
         return $db->updateAccount($input, $targetUser);
     }
+
+    public function updateSelfAccount(array $input, DSUser $user, IDataBaseUpdateAccount $db): DSUser
+    {
+        $this->authentication->check($user);
+        $this->privilegesManagement->checkBool($user, "selfAccountUpdate");
+
+        return $db->updateAccount($input, $user);
+    }
 }
