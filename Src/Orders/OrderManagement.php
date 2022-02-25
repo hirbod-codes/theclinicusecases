@@ -23,7 +23,7 @@ use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveLaserOrders;
-use TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveOrders;
+use TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class OrderManagement
@@ -58,7 +58,7 @@ class OrderManagement
         $this->privilegesManagement = $privilegesManagement;
     }
 
-    public function getRegularOrders(DSUser $user, int $lastOrderId = null, int $count, IDataBaseRetrieveOrders $db): DSOrders
+    public function getRegularOrders(DSUser $user, int $lastOrderId = null, int $count, IDataBaseRetrieveRegularOrders $db): DSOrders
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "regularOrdersRead");

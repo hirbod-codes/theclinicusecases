@@ -21,7 +21,7 @@ use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveLaserOrders;
-use TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveOrders;
+use TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders;
 use TheClinicUseCases\Orders\OrderManagement;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
@@ -78,8 +78,8 @@ class OrderManagementTest extends TestCase
         /** @var \TheClinic\DataStructures\Order\DSOrders|\Mockery\MockInterface $dsOrders */
         $dsOrders = Mockery::mock(DSOrders::class);
 
-        /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveOrders|\Mockery\MockInterface $db */
-        $db = Mockery::mock(IDataBaseRetrieveOrders::class);
+        /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseRetrieveRegularOrders::class);
         $db->shouldReceive("getRegularOrders")->with($lastOrderId, $count)->andReturn($dsOrders);
 
         $orders = (new OrderManagement($this->authentication, $privilegesManagement, $this->iCalculateRegularOrder, $this->iCalculateLaserOrder, $this->iLaserPriceCalculator, $this->iLaserTimeConsumptionCalculator))
