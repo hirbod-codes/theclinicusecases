@@ -77,17 +77,17 @@ class AccountsManagementTest extends TestCase
 
     public function testCreateAccount(): void
     {
-        $input = [];
+        $newUser = $this->makeUser();
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseCreateAccount::class);
-        $db->shouldReceive("createAccount")->with($input)->andReturn($this->makeUser());
+        $db->shouldReceive("createAccount")->with($newUser)->andReturn($this->makeUser());
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountCreate");
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->createAccount($input, $this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->createAccount($newUser, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
