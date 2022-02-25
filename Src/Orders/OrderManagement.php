@@ -2,10 +2,6 @@
 
 namespace TheClinicUseCases\Orders;
 
-use TheClinicDataStructures\DataStructures\Order\DSLaserOrder;
-use TheClinicDataStructures\DataStructures\Order\DSOrders;
-use TheClinicDataStructures\DataStructures\Order\DSLaserOrders;
-use TheClinicDataStructures\DataStructures\Order\DSOrder;
 use TheClinicDataStructures\DataStructures\Order\DSPackages;
 use TheClinicDataStructures\DataStructures\Order\DSParts;
 use TheClinicDataStructures\DataStructures\User\DSUser;
@@ -19,6 +15,10 @@ use TheClinic\Order\Laser\ILaserPriceCalculator;
 use TheClinic\Order\Laser\ILaserTimeConsumptionCalculator;
 use TheClinic\Order\Laser\LaserOrder;
 use TheClinic\Order\Regular\RegularOrder;
+use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
+use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrders;
+use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
+use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrders;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
@@ -58,7 +58,7 @@ class OrderManagement
         $this->privilegesManagement = $privilegesManagement;
     }
 
-    public function getRegularOrders(DSUser $user, int $lastOrderId = null, int $count, IDataBaseRetrieveRegularOrders $db): DSOrders
+    public function getRegularOrders(DSUser $user, int $lastOrderId = null, int $count, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "regularOrdersRead");
@@ -74,7 +74,7 @@ class OrderManagement
         return $db->getLaserOrders($lastLaserOrderId, $count);
     }
 
-    public function createRegularOrder(DSUser $user, IDataBaseCreateRegularOrder $db): DSOrder
+    public function createRegularOrder(DSUser $user, IDataBaseCreateRegularOrder $db): DSRegularOrder
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "regularOrderCreate");
