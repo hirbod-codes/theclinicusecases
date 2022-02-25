@@ -1,15 +1,11 @@
 <?php
 
-namespace Tests\Accounts;
+namespace Tests\Orders;
 
 use Faker\Factory;
 use Faker\Generator;
 use Mockery;
 use Tests\TestCase;
-use TheClinicDataStructures\DataStructures\Order\DSLaserOrder;
-use TheClinicDataStructures\DataStructures\Order\DSLaserOrders;
-use TheClinicDataStructures\DataStructures\Order\DSOrder;
-use TheClinicDataStructures\DataStructures\Order\DSOrders;
 use TheClinicDataStructures\DataStructures\Order\DSPackages;
 use TheClinicDataStructures\DataStructures\Order\DSParts;
 use TheClinicDataStructures\DataStructures\User\DSUser;
@@ -17,6 +13,10 @@ use TheClinic\Order\ICalculateLaserOrder;
 use TheClinic\Order\ICalculateRegularOrder;
 use TheClinic\Order\Laser\ILaserPriceCalculator;
 use TheClinic\Order\Laser\ILaserTimeConsumptionCalculator;
+use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
+use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrders;
+use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
+use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrders;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
@@ -75,8 +75,8 @@ class OrderManagementTest extends TestCase
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "regularOrdersRead");
 
-        /** @var \TheClinic\DataStructures\Order\DSOrders|\Mockery\MockInterface $dsOrders */
-        $dsOrders = Mockery::mock(DSOrders::class);
+        /** @var \TheClinic\DataStructures\Order\Regular\DSRegularOrders|\Mockery\MockInterface $dsOrders */
+        $dsOrders = Mockery::mock(DSRegularOrders::class);
 
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveRegularOrders::class);
@@ -84,7 +84,7 @@ class OrderManagementTest extends TestCase
 
         $orders = (new OrderManagement($this->authentication, $privilegesManagement, $this->iCalculateRegularOrder, $this->iCalculateLaserOrder, $this->iLaserPriceCalculator, $this->iLaserTimeConsumptionCalculator))
             ->getRegularOrders($this->user, $lastOrderId, $count, $db);
-        $this->assertInstanceOf(DSOrders::class, $orders);
+        $this->assertInstanceOf(DSRegularOrders::class, $orders);
     }
 
     public function testGetLaserOrders(): void
@@ -96,7 +96,7 @@ class OrderManagementTest extends TestCase
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "laserOrdersRead");
 
-        /** @var \TheClinic\DataStructures\Order\DSLaserOrders|\Mockery\MockInterface $dsLaserOrders */
+        /** @var \TheClinic\DataStructures\Order\Laser\DSLaserOrders|\Mockery\MockInterface $dsLaserOrders */
         $dsLaserOrders = Mockery::mock(DSLaserOrders::class);
 
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveLaserOrders|\Mockery\MockInterface $db */
@@ -120,8 +120,8 @@ class OrderManagementTest extends TestCase
         $this->iCalculateRegularOrder->shouldReceive("calculatePrice")->andReturn($price);
         $this->iCalculateRegularOrder->shouldReceive("calculateTimeConsumption")->andReturn($timeConsumption);
 
-        /** @var \TheClinicDataStructures\DataStructures\Order\DSOrder|\Mockery\MockInterface $dsOrder */
-        $dsOrder = Mockery::mock(DSOrder::class);
+        /** @var \TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder|\Mockery\MockInterface $dsOrder */
+        $dsOrder = Mockery::mock(DSRegularOrder::class);
 
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseCreateRegularOrder::class);
@@ -129,7 +129,7 @@ class OrderManagementTest extends TestCase
 
         $order = (new OrderManagement($this->authentication, $privilegesManagement, $this->iCalculateRegularOrder, $this->iCalculateLaserOrder, $this->iLaserPriceCalculator, $this->iLaserTimeConsumptionCalculator))
             ->createRegularOrder($this->user, $db);
-        $this->assertInstanceOf(DSOrder::class, $order);
+        $this->assertInstanceOf(DSRegularOrder::class, $order);
     }
 
     public function testCreateLaserOrder(): void
@@ -153,7 +153,7 @@ class OrderManagementTest extends TestCase
         /** @var \TheClinicDataStructures\DataStructures\Order\DSPackages|\Mockery\MockInterface $dsPackages */
         $dsPackages = Mockery::mock(DSPackages::class);
         $dsPackages->shouldReceive("getGender")->once()->andReturn($gender);
-        /** @var \TheClinicDataStructures\DataStructures\Order\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
+        /** @var \TheClinicDataStructures\DataStructures\Order\Regular\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
         $dsLaserOrder = Mockery::mock(DSLaserOrder::class);
 
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder|\Mockery\MockInterface $db */
@@ -166,6 +166,6 @@ class OrderManagementTest extends TestCase
 
         $order = (new OrderManagement($this->authentication, $privilegesManagement, $this->iCalculateRegularOrder, $this->iCalculateLaserOrder, $this->iLaserPriceCalculator, $this->iLaserTimeConsumptionCalculator))
             ->createLaserOrder($this->user, $targetUser, $dsParts, $dsPackages, $db);
-        $this->assertInstanceOf(DSOrder::class, $order);
+        $this->assertInstanceOf(DSLaserOrder::class, $order);
     }
 }
