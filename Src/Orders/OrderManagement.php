@@ -63,7 +63,7 @@ class OrderManagement
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "regularOrdersRead");
 
-        return $db->getOrders($lastOrderId, $count);
+        return $db->getRegularOrders($lastOrderId, $count);
     }
 
     public function getLaserOrders(DSUser $user, int $lastLaserOrderId = null, int $count, IDataBaseRetrieveLaserOrders $db): DSLaserOrders

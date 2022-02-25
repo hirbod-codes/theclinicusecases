@@ -80,7 +80,7 @@ class OrderManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveOrders|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveOrders::class);
-        $db->shouldReceive("getOrders")->with($lastOrderId, $count)->andReturn($dsOrders);
+        $db->shouldReceive("getRegularOrders")->with($lastOrderId, $count)->andReturn($dsOrders);
 
         $orders = (new OrderManagement($this->authentication, $privilegesManagement, $this->iCalculateRegularOrder, $this->iCalculateLaserOrder, $this->iLaserPriceCalculator, $this->iLaserTimeConsumptionCalculator))
             ->getRegularOrders($this->user, $lastOrderId, $count, $db);
