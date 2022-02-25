@@ -6,5 +6,5 @@ use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseUpdateAccount
 {
-    public function updateAccount(array $input): DSUser;
+    public function updateAccount(array $input, DSUser $user): DSUser;
 }
