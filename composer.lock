@@ -4,23 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce588cc58d27fb21ed1d5e7fe0b634b9",
+    "content-hash": "1787e50e8bfd1e20c08f1a6868ce67b8",
     "packages": [
         {
             "name": "hirbod-codes/theclinic",
-            "version": "v1.4.1",
+            "version": "v1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hirbod-codes/theclinic.git",
-                "reference": "1e54e2651a1ec1aac8bd450618a9cf56bb16e507"
+                "reference": "b5bdf3a15bdb5ba1ece09ed85cb7ea088bd6aa57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hirbod-codes/theclinic/zipball/1e54e2651a1ec1aac8bd450618a9cf56bb16e507",
-                "reference": "1e54e2651a1ec1aac8bd450618a9cf56bb16e507",
+                "url": "https://api.github.com/repos/hirbod-codes/theclinic/zipball/b5bdf3a15bdb5ba1ece09ed85cb7ea088bd6aa57",
+                "reference": "b5bdf3a15bdb5ba1ece09ed85cb7ea088bd6aa57",
                 "shasum": ""
             },
             "require": {
+                "hirbod-codes/theclinicdatastructures": "^1.0",
                 "php": "^8.0"
             },
             "require-dev": {
@@ -47,9 +48,54 @@
             "description": "The business entities of this project.",
             "support": {
                 "issues": "https://github.com/hirbod-codes/theclinic/issues",
-                "source": "https://github.com/hirbod-codes/theclinic/tree/v1.4.1"
+                "source": "https://github.com/hirbod-codes/theclinic/tree/v1.5.1"
             },
-            "time": "2022-02-24T09:15:27+00:00"
+            "time": "2022-02-25T05:48:41+00:00"
+        },
+        {
+            "name": "hirbod-codes/theclinicdatastructures",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hirbod-codes/theclinicdatastructures.git",
+                "reference": "b2a01d79b577be92147a72993c6151abef1e2c8a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hirbod-codes/theclinicdatastructures/zipball/b2a01d79b577be92147a72993c6151abef1e2c8a",
+                "reference": "b2a01d79b577be92147a72993c6151abef1e2c8a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "fakerphp/faker": "^1.15",
+                "mockery/mockery": "dev-master",
+                "phpunit/phpunit": "9.5"
+            },
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "TheClinicDataStructures\\": "Src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hirbod Khatami",
+                    "email": "hirbod.khatami.words@gmail.com"
+                }
+            ],
+            "description": "The data structures of theclinic project.",
+            "support": {
+                "issues": "https://github.com/hirbod-codes/theclinicdatastructures/issues",
+                "source": "https://github.com/hirbod-codes/theclinicdatastructures/tree/v1.0.1"
+            },
+            "time": "2022-02-25T05:46:04+00:00"
         }
     ],
     "packages-dev": [
@@ -2304,12 +2350,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Ctype\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
