@@ -6,5 +6,5 @@ use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseCreateAccount
 {
-    public function createAccount(array $input): DSUser;
+    public function createAccount(DSUser $newUser): DSUser;
 }
