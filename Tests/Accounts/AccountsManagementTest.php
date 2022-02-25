@@ -93,8 +93,7 @@ class AccountsManagementTest extends TestCase
 
     public function testDeleteAccount(): void
     {
-        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $targetUser */
-        $targetUser = Mockery::mock(DSUser::class);
+        $targetUser = $this->makeUser();
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseDeleteAccount::class);
         $db->shouldReceive("deleteAccount")->with($targetUser);
@@ -125,15 +124,17 @@ class AccountsManagementTest extends TestCase
     {
         $input = [];
 
+        $targetUser = $this->makeUser();
+
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseUpdateAccount::class);
-        $db->shouldReceive("updateAccount")->with($input)->andReturn($this->makeUser());
+        $db->shouldReceive("updateAccount")->with($input, $targetUser)->andReturn($this->makeUser());
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountUpdate");
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->updateAccount($input, $this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->updateAccount($input, $targetUser, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 }
