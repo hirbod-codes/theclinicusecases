@@ -9,6 +9,7 @@ use Tests\TestCase;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\AccountsManagement;
 use TheClinicUseCases\Accounts\Authentication;
+use TheClinicUseCases\Accounts\ICheckForAuthenticatedUsers;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts;
@@ -88,6 +89,23 @@ class AccountsManagementTest extends TestCase
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountCreate");
 
         $account = (new AccountsManagement($this->authentication, $privilegesManagement))->createAccount($newUser, $this->user, $db);
+        $this->assertInstanceOf(DSUser::class, $account);
+    }
+
+    public function testSignupAccount(): void
+    {
+        /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseCreateAccount::class);
+        $db->shouldReceive("createAccount")->with($this->user)->andReturn($this->makeUser());
+
+        /** @var \TheClinicUseCases\Accounts\ICheckForAuthenticatedUsers|\Mockery\MockInterface $iCheckForAuthenticatedUsers */
+        $iCheckForAuthenticatedUsers = Mockery::mock(ICheckForAuthenticatedUsers::class);
+        $iCheckForAuthenticatedUsers->shouldReceive("checkIfNoOneIsAuthenticated")->andReturn(true);
+
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->signupAccount($this->user, $db, $iCheckForAuthenticatedUsers);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
