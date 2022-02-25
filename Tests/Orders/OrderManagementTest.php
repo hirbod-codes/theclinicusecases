@@ -66,7 +66,7 @@ class OrderManagementTest extends TestCase
         return $user;
     }
 
-    public function testGetOrders(): void
+    public function testGetRegularOrders(): void
     {
         $lastOrderId = $this->faker->numberBetween(1, 1000);
         $count = $this->faker->numberBetween(1, 30);
@@ -83,7 +83,7 @@ class OrderManagementTest extends TestCase
         $db->shouldReceive("getOrders")->with($lastOrderId, $count)->andReturn($dsOrders);
 
         $orders = (new OrderManagement($this->authentication, $privilegesManagement, $this->iCalculateRegularOrder, $this->iCalculateLaserOrder, $this->iLaserPriceCalculator, $this->iLaserTimeConsumptionCalculator))
-            ->getOrders($this->user, $lastOrderId, $count, $db);
+            ->getRegularOrders($this->user, $lastOrderId, $count, $db);
         $this->assertInstanceOf(DSOrders::class, $orders);
     }
 
