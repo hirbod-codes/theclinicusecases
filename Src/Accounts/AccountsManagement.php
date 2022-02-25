@@ -46,12 +46,12 @@ class AccountsManagement
         return $db->getAccount($user->getId());
     }
 
-    public function createAccount(array $input, DSUser $user, IDataBaseCreateAccount $db): DSUser
+    public function createAccount(DSUser $newUser, DSUser $user, IDataBaseCreateAccount $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountCreate");
 
-        return $db->createAccount($input);
+        return $db->createAccount($newUser);
     }
 
     public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
