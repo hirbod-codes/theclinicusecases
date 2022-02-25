@@ -54,6 +54,15 @@ class AccountsManagement
         return $db->createAccount($newUser);
     }
 
+    public function signupAccount(DSUser $newUser, IDataBaseCreateAccount $db, ICheckForAuthenticatedUsers $iCheckForAuthenticatedUsers): DSUser
+    {
+        if (!$iCheckForAuthenticatedUsers->checkIfNoOneIsAuthenticated()) {
+            throw new \RuntimeException("You're already loged in !!!", 500);
+        }
+
+        return $db->createAccount($newUser);
+    }
+
     public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
     {
         $this->authentication->check($user);
