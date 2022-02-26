@@ -8,7 +8,41 @@ use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseRetrieveRegularOrders
 {
+    /**
+     * @param string $operator Must be one the followings: "<=" ">=" "=" "<>" "<" ">"
+     * @param integer $price
+     * @param DSUser $targetUser
+     * @return DSRegularOrders
+     */
+    public function getRegularOrdersByPriceByUser(string $operator, int $price, DSUser $targetUser): DSRegularOrders;
+
+    /**
+     * @param string $operator Must be one the followings: "<=" ">=" "=" "<>" "<" ">"
+     * @param integer $price
+     * @param DSUser $targetUser
+     * @return DSRegularOrders
+     */
+    public function getRegularOrdersByPrice(int $lastOrderId = null, int $count, string $operator, int $price): DSRegularOrders;
+
+    /**
+     * @param string $operator Must be one the followings: "<=" ">=" "=" "<>" "<" ">"
+     * @param integer $price
+     * @param DSUser $targetUser
+     * @return DSRegularOrders
+     */
+    public function getRegularOrdersByTimeConsumptionByUser(string $operator, int $timeCosumption, DSUser $targetUser): DSRegularOrders;
+
+    /**
+     * @param string $operator Must be one the followings: "<=" ">=" "=" "<>" "<" ">"
+     * @param integer $price
+     * @param DSUser $targetUser
+     * @return DSRegularOrders
+     */
+    public function getRegularOrdersByTimeConsumption(int $lastOrderId = null, int $count, string $operator, int $timeCosumption): DSRegularOrders;
+
+    public function getRegularOrdersByUser(DSUser $targetUser): DSRegularOrders;
+
     public function getRegularOrders(int $lastOrderId = null, int $count): DSRegularOrders;
 
-    public function getRegularOrder(DSUser $user): DSRegularOrder;
+    public function getRegularOrderById(int $id): DSRegularOrder;
 }
