@@ -10,7 +10,10 @@ use TheClinic\Order\Laser\ILaserPriceCalculator;
 use TheClinic\Order\Laser\ILaserTimeConsumptionCalculator;
 use TheClinic\Order\Laser\LaserOrder;
 use TheClinic\Order\Regular\RegularOrder;
+use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
+use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
+use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class OrderCreation
@@ -43,5 +46,19 @@ class OrderCreation
 
         $this->authentication = $authentication;
         $this->privilegesManagement = $privilegesManagement;
+    }
+
+    public function createRegularOrder(DSUser $targetUser, DSUser $user, IDataBaseCreateRegularOrder $db): DSRegularOrder
+    {
+        if ($targetUser->getId() === $user->getId()) {
+            $privilege = "selfRegularOrderCreate";
+        } else {
+            $privilege = "regularOrderCreate";
+        }
+
+        $this->authentication->check($user);
+        $this->privilegesManagement->checkBool($user, $privilege);
+
+        return $db->createRegularOrder($targetUser, $this->iCalculateRegularOrder->calculatePrice(), $this->iCalculateRegularOrder->calculateTimeConsumption());
     }
 }
