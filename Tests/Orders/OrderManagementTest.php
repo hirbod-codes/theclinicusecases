@@ -66,6 +66,26 @@ class OrderManagementTest extends TestCase
         return $user;
     }
 
+    public function testGetRegularOrder(): void
+    {
+        $targetUser = $this->makeUser();
+
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "regularOrderRead");
+
+        /** @var \TheClinic\DataStructures\Order\Regular\DSRegularOrder|\Mockery\MockInterface $dsOrder */
+        $dsOrder = Mockery::mock(DSRegularOrder::class);
+
+        /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseRetrieveRegularOrders::class);
+        $db->shouldReceive("getRegularOrder")->with($targetUser)->andReturn($dsOrder);
+
+        $orders = (new OrderManagement($this->authentication, $privilegesManagement, $this->iCalculateRegularOrder, $this->iCalculateLaserOrder, $this->iLaserPriceCalculator, $this->iLaserTimeConsumptionCalculator))
+            ->getRegularOrder($targetUser, $this->user, $db);
+        $this->assertInstanceOf(DSRegularOrder::class, $orders);
+    }
+
     public function testGetRegularOrders(): void
     {
         $lastOrderId = $this->faker->numberBetween(1, 1000);
