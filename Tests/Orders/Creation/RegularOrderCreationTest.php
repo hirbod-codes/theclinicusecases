@@ -21,7 +21,6 @@ use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Creation\RegularOrderCreation;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
-use TheClinicUseCases\Orders\OrderManagement;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class RegularOrderCreationTest extends TestCase
