@@ -58,6 +58,14 @@ class OrderManagement
         $this->privilegesManagement = $privilegesManagement;
     }
 
+    public function getRegularOrder(DSUser $targetUser, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrder
+    {
+        $this->authentication->check($user);
+        $this->privilegesManagement->checkBool($user, "regularOrderRead");
+
+        return $db->getRegularOrder($targetUser);
+    }
+
     public function getRegularOrders(DSUser $user, int $lastOrderId = null, int $count, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
     {
         $this->authentication->check($user);
