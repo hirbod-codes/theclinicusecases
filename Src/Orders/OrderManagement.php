@@ -58,20 +58,20 @@ class OrderManagement
         $this->privilegesManagement = $privilegesManagement;
     }
 
-    public function getRegularOrder(DSUser $targetUser, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrder
-    {
-        $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "regularOrderRead");
-
-        return $db->getRegularOrder($targetUser);
-    }
-
     public function getRegularOrders(DSUser $user, int $lastOrderId = null, int $count, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "regularOrdersRead");
 
         return $db->getRegularOrders($lastOrderId, $count);
+    }
+
+    public function getLaserOrder(DSUser $targetUser, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrder
+    {
+        $this->authentication->check($user);
+        $this->privilegesManagement->checkBool($user, "laserOrderRead");
+
+        return $db->getLaserOrder($targetUser);
     }
 
     public function getLaserOrders(DSUser $user, int $lastLaserOrderId = null, int $count, IDataBaseRetrieveLaserOrders $db): DSLaserOrders
