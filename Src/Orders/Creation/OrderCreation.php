@@ -37,8 +37,8 @@ class OrderCreation
     private ILaserTimeConsumptionCalculator $iLaserTimeConsumptionCalculator;
 
     public function __construct(
-        Authentication $authentication,
-        PrivilegesManagement $privilegesManagement,
+        Authentication $authentication = null,
+        PrivilegesManagement $privilegesManagement = null,
         ICalculateRegularOrder $iCalculateRegularOrder = null,
         ICalculateLaserOrder $iCalculateLaserOrder = null,
         ILaserPriceCalculator $iLaserPriceCalculator = null,
@@ -50,8 +50,8 @@ class OrderCreation
         $this->iLaserTimeConsumptionCalculator = $iLaserTimeConsumptionCalculator ?: new TimeConsumptionCalculator;
         $this->iCalculateLaserOrder = $iCalculateLaserOrder ?: new LaserOrder;
 
-        $this->authentication = $authentication;
-        $this->privilegesManagement = $privilegesManagement;
+        $this->authentication = $authentication ?: new Authentication;
+        $this->privilegesManagement = $privilegesManagement ?: new PrivilegesManagement;
     }
 
     public function createRegularOrder(DSUser $targetUser, DSUser $user, IDataBaseCreateRegularOrder $db): DSRegularOrder
