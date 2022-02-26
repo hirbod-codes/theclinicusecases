@@ -6,6 +6,8 @@ use Faker\Factory;
 use Faker\Generator;
 use Mockery;
 use Tests\TestCase;
+use TheClinic\Exceptions\Order\InvalidGenderException;
+use TheClinic\Exceptions\Order\NoPackageOrPartException;
 use TheClinicDataStructures\DataStructures\Order\DSPackages;
 use TheClinicDataStructures\DataStructures\Order\DSParts;
 use TheClinicDataStructures\DataStructures\User\DSUser;
@@ -109,19 +111,27 @@ class OrderCreationTest extends TestCase
 
     public function testCreateLaserOrder(): void
     {
-        $this->markTestIncomplete();
+        $this->testCreateLaserOrderWithIds(14, 14, "selfLaserOrderCreate");
+        $this->testCreateLaserOrderWithIds(14, 15, "laserOrderCreate");
+    }
+
+    private function testCreateLaserOrderWithIds(int $userId, int $targetUserId, string $privilege): void
+    {
         $gender = "Male";
         $price = 400000;
         $timeConsumption = 600;
         $priceWithoutDiscount = 600000;
 
-        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
-        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "laserOrderCreate");
+        $this->user->shouldReceive("getId")->andReturn($userId);
 
         /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $targetUser */
         $targetUser = $this->makeUser();
         $targetUser->shouldReceive("getGender")->twice()->andReturn($gender);
+        $targetUser->shouldReceive("getId")->andReturn($targetUserId);
+
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, $privilege);
 
         /** @var \TheClinicDataStructures\DataStructures\Order\DSParts|\Mockery\MockInterface $dsParts */
         $dsParts = Mockery::mock(DSParts::class);
@@ -129,9 +139,9 @@ class OrderCreationTest extends TestCase
         /** @var \TheClinicDataStructures\DataStructures\Order\DSPackages|\Mockery\MockInterface $dsPackages */
         $dsPackages = Mockery::mock(DSPackages::class);
         $dsPackages->shouldReceive("getGender")->once()->andReturn($gender);
+
         /** @var \TheClinicDataStructures\DataStructures\Order\Regular\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
         $dsLaserOrder = Mockery::mock(DSLaserOrder::class);
-
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseCreateLaserOrder::class);
         $db->shouldReceive("createLaserOrder")->with($targetUser, $dsParts, $dsPackages, $price, $timeConsumption, $priceWithoutDiscount)->andReturn($dsLaserOrder);
@@ -140,8 +150,53 @@ class OrderCreationTest extends TestCase
         $this->iCalculateLaserOrder->shouldReceive("calculateTimeConsumption")->with($dsParts, $dsPackages, $this->iLaserTimeConsumptionCalculator)->andReturn($timeConsumption);
         $this->iCalculateLaserOrder->shouldReceive("calculatePriceWithoutDiscount")->with($dsParts, $dsPackages, $this->iLaserPriceCalculator)->andReturn($priceWithoutDiscount);
 
-        $order = (new OrderManagement($this->authentication, $privilegesManagement, $this->iCalculateRegularOrder, $this->iCalculateLaserOrder, $this->iLaserPriceCalculator, $this->iLaserTimeConsumptionCalculator))
-            ->createLaserOrder($this->user, $targetUser, $dsParts, $dsPackages, $db);
+        $order = (new OrderCreation(
+            $this->authentication,
+            $privilegesManagement,
+            $this->iCalculateRegularOrder,
+            $this->iCalculateLaserOrder,
+            $this->iLaserPriceCalculator,
+            $this->iLaserTimeConsumptionCalculator
+        ))
+            ->createLaserOrder($targetUser, $this->user, $dsParts, $dsPackages, $db);
         $this->assertInstanceOf(DSLaserOrder::class, $order);
+
+        try {
+            $dsParts = null;
+            /** @var \TheClinicDataStructures\DataStructures\Order\DSPackages|\Mockery\MockInterface $dsPackages */
+            $dsPackages = Mockery::mock(DSPackages::class);
+            $dsPackages->shouldReceive("getGender")->once()->andReturn("Female");
+
+            $order = (new OrderCreation(
+                $this->authentication,
+                $privilegesManagement,
+                $this->iCalculateRegularOrder,
+                $this->iCalculateLaserOrder,
+                $this->iLaserPriceCalculator,
+                $this->iLaserTimeConsumptionCalculator
+            ))
+                ->createLaserOrder($targetUser, $this->user, $dsParts, $dsPackages, $db);
+
+            throw new \RuntimeException("Failure!!!", 500);
+        } catch (InvalidGenderException $th) {
+        }
+
+        try {
+            $dsParts = null;
+            $dsPackages = null;
+
+            $order = (new OrderCreation(
+                $this->authentication,
+                $privilegesManagement,
+                $this->iCalculateRegularOrder,
+                $this->iCalculateLaserOrder,
+                $this->iLaserPriceCalculator,
+                $this->iLaserTimeConsumptionCalculator
+            ))
+                ->createLaserOrder($targetUser, $this->user, $dsParts, $dsPackages, $db);
+
+            throw new \RuntimeException("Failure!!!", 500);
+        } catch (NoPackageOrPartException $th) {
+        }
     }
 }
