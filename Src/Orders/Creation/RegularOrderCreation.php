@@ -22,7 +22,7 @@ use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
-class OrderCreation
+class RegularOrderCreation
 {
     private Authentication $authentication;
 
