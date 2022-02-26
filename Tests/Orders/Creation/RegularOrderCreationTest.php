@@ -18,13 +18,13 @@ use TheClinic\Order\Laser\ILaserTimeConsumptionCalculator;
 use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
 use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
 use TheClinicUseCases\Accounts\Authentication;
-use TheClinicUseCases\Orders\Creation\OrderCreation;
+use TheClinicUseCases\Orders\Creation\RegularOrderCreation;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
 use TheClinicUseCases\Orders\OrderManagement;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
-class OrderCreationTest extends TestCase
+class RegularOrderCreationTest extends TestCase
 {
     private Generator $faker;
 
@@ -97,7 +97,7 @@ class OrderCreationTest extends TestCase
         $db = Mockery::mock(IDataBaseCreateRegularOrder::class);
         $db->shouldReceive("createRegularOrder")->with($targetUser, $price, $timeConsumption)->andReturn($dsOrder);
 
-        $order = (new OrderCreation(
+        $order = (new RegularOrderCreation(
             $this->authentication,
             $privilegesManagement,
             $this->iCalculateRegularOrder,
@@ -150,7 +150,7 @@ class OrderCreationTest extends TestCase
         $this->iCalculateLaserOrder->shouldReceive("calculateTimeConsumption")->with($dsParts, $dsPackages, $this->iLaserTimeConsumptionCalculator)->andReturn($timeConsumption);
         $this->iCalculateLaserOrder->shouldReceive("calculatePriceWithoutDiscount")->with($dsParts, $dsPackages, $this->iLaserPriceCalculator)->andReturn($priceWithoutDiscount);
 
-        $order = (new OrderCreation(
+        $order = (new RegularOrderCreation(
             $this->authentication,
             $privilegesManagement,
             $this->iCalculateRegularOrder,
@@ -167,7 +167,7 @@ class OrderCreationTest extends TestCase
             $dsPackages = Mockery::mock(DSPackages::class);
             $dsPackages->shouldReceive("getGender")->once()->andReturn("Female");
 
-            $order = (new OrderCreation(
+            $order = (new RegularOrderCreation(
                 $this->authentication,
                 $privilegesManagement,
                 $this->iCalculateRegularOrder,
@@ -185,7 +185,7 @@ class OrderCreationTest extends TestCase
             $dsParts = null;
             $dsPackages = null;
 
-            $order = (new OrderCreation(
+            $order = (new RegularOrderCreation(
                 $this->authentication,
                 $privilegesManagement,
                 $this->iCalculateRegularOrder,
