@@ -14,15 +14,14 @@ class PrivilegesManagement
      * @param \TheClinicDataStructures\DataStructures\User\DSUser $user
      * @param string $privilege
      * @return void
+     * 
      * @throws \TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized
      * @throws \TheClinicUseCases\Exceptions\PrivilegeNotFound
      */
     public function checkBool(DSUser $user, string $privilege): void
     {
-        $role = $user->getRule();
-
-        if ($role->privilegeExists($privilege) && $role->getPrivilegeValue($privilege) === true) {
-        } elseif (!$role->privilegeExists($privilege)) {
+        if ($user->privilegeExists($privilege) && $user->getPrivilege($privilege) === true) {
+        } elseif (!$user->privilegeExists($privilege)) {
             throw new PrivilegeNotFound();
         } else {
             throw new UserIsNotAuthorized();
