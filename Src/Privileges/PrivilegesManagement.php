@@ -8,6 +8,21 @@ use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 
 class PrivilegesManagement
 {
+    public function getUserPrivileges(DSUser $user): array
+    {
+        return $user->getUserPrivileges();
+    }
+
+    public function getUserPrivilege(DSUser $user, string $privilege): mixed
+    {
+        return $user->getPrivilege($privilege);
+    }
+
+    public function setUserPrivilege(DSUser $user, string $privilege, mixed $value): void
+    {
+        $user->setPrivilege($privilege, $value);
+    }
+
     /**
      * Check for existence and truthiness of a privilege that has a boolean value.
      * 
