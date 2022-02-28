@@ -32,9 +32,9 @@ class RegularVisitCreation
     public function create(DSRegularOrder $dsRegularOrder, DSUser $user, IDataBaseCreateVisit $db): DSRegularVisit
     {
         if ($dsRegularOrder->getUser()->getId() === $user->getId()) {
-            $privilege = "selfLaserVisitCreate";
+            $privilege = "selfRegularVisitCreate";
         } else {
-            $privilege = "laserVisitCreate";
+            $privilege = "regularVisitCreate";
         }
 
         $this->authentication->check($user);
