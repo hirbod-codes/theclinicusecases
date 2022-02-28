@@ -28,8 +28,8 @@ class RegularVisitCreationTest extends TestCase
 
     public function testCreate(): void
     {
-        $this->createTester(14, 14, "selfLaserVisitCreate");
-        $this->createTester(14, 15, "laserVisitCreate");
+        $this->createTester(14, 14, "selfRegularVisitCreate");
+        $this->createTester(14, 15, "regularVisitCreate");
     }
 
     public function createTester(int $userId, int $targetUserId, string $privilege): void
