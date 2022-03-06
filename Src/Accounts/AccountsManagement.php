@@ -38,6 +38,14 @@ class AccountsManagement
         return $db->getAccounts($lastAccountId, $count);
     }
 
+    public function getAccount(int $accountId, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
+    {
+        $this->authentication->check($user);
+        $this->privilegesManagement->checkBool($user, "accountRead");
+
+        return $db->getAccount($accountId);
+    }
+
     public function getSelfAccounts(DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
     {
         $this->authentication->check($user);
