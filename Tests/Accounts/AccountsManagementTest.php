@@ -27,7 +27,7 @@ class AccountsManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->faker = Factory::create();
 
         $this->user = $this->makeUser();
@@ -59,6 +59,22 @@ class AccountsManagementTest extends TestCase
 
         $accounts = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccounts($id, $count, $this->user, $db);
         $this->assertIsArray($accounts);
+    }
+
+    public function testGetAccount(): void
+    {
+        $id = $this->faker->numberBetween(1, 1000);
+
+        /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseRetrieveAccounts::class);
+        $db->shouldReceive("getAccount")->with($id)->andReturn($this->user);
+
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountRead");
+
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccount($id, $this->user, $db);
+        $this->assertInstanceOf(DSUser::class, $account);
     }
 
     public function testGetSelfAccounts(): void
