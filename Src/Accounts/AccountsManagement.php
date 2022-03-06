@@ -54,21 +54,21 @@ class AccountsManagement
         return $db->getAccount($user->getId());
     }
 
-    public function createAccount(DSUser $newUser, DSUser $user, IDataBaseCreateAccount $db): DSUser
+    public function createAccount(string $password, DSUser $newUser, DSUser $user, IDataBaseCreateAccount $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountCreate");
 
-        return $db->createAccount($newUser);
+        return $db->createAccount($newUser, $password);
     }
 
-    public function signupAccount(DSUser $newUser, IDataBaseCreateAccount $db, ICheckForAuthenticatedUsers $iCheckForAuthenticatedUsers): DSUser
+    public function signupAccount(string $password, DSUser $newUser, IDataBaseCreateAccount $db, ICheckForAuthenticatedUsers $iCheckForAuthenticatedUsers): DSUser
     {
         if (!$iCheckForAuthenticatedUsers->checkIfNoOneIsAuthenticated()) {
             throw new \RuntimeException("You're already loged in !!!", 500);
         }
 
-        return $db->createAccount($newUser);
+        return $db->createAccount($newUser, $password);
     }
 
     public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
