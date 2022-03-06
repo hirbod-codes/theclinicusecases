@@ -97,24 +97,27 @@ class AccountsManagementTest extends TestCase
     public function testCreateAccount(): void
     {
         $newUser = $this->makeUser();
+        $password = $this->faker->password(8);
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseCreateAccount::class);
-        $db->shouldReceive("createAccount")->with($newUser)->andReturn($this->makeUser());
+        $db->shouldReceive("createAccount")->with($newUser, $password)->andReturn($this->makeUser());
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountCreate");
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->createAccount($newUser, $this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->createAccount($password, $newUser, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
     public function testSignupAccount(): void
     {
+        $password = $this->faker->password(8);
+
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseCreateAccount::class);
-        $db->shouldReceive("createAccount")->with($this->user)->andReturn($this->makeUser());
+        $db->shouldReceive("createAccount")->with($this->user, $password)->andReturn($this->makeUser());
 
         /** @var \TheClinicUseCases\Accounts\ICheckForAuthenticatedUsers|\Mockery\MockInterface $iCheckForAuthenticatedUsers */
         $iCheckForAuthenticatedUsers = Mockery::mock(ICheckForAuthenticatedUsers::class);
@@ -123,7 +126,7 @@ class AccountsManagementTest extends TestCase
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->signupAccount($this->user, $db, $iCheckForAuthenticatedUsers);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->signupAccount($password, $this->user, $db, $iCheckForAuthenticatedUsers);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
