@@ -8,6 +8,8 @@ use TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount;
+use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToDeleteAdminException;
+use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToUpdateAdminException;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class AccountsManagement
@@ -75,7 +77,7 @@ class AccountsManagement
     public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
     {
         if ($user instanceof DSAdmin && $targetUser instanceof DSAdmin && $user->getId() !== $targetUser->getId()) {
-            throw new \RuntimeException("An admin user can not delete another admin user.", 403);
+            throw new AdminTemptsToDeleteAdminException();
         }
 
         $this->authentication->check($user);
@@ -95,7 +97,7 @@ class AccountsManagement
     public function updateAccount(array $input, DSUser $targetUser, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
         if ($user instanceof DSAdmin && $targetUser instanceof DSAdmin && $user->getId() !== $targetUser->getId()) {
-            throw new \RuntimeException("An admin user can not update another admin user.", 403);
+            throw new AdminTemptsToUpdateAdminException();
         }
 
         $this->authentication->check($user);
