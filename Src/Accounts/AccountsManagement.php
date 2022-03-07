@@ -2,6 +2,7 @@
 
 namespace TheClinicUseCases\Accounts;
 
+use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount;
@@ -46,7 +47,7 @@ class AccountsManagement
         return $db->getAccount($accountId);
     }
 
-    public function getSelfAccounts(DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
+    public function getSelfAccount(DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "selfAccountRead");
@@ -54,25 +55,29 @@ class AccountsManagement
         return $db->getAccount($user->getId());
     }
 
-    public function createAccount(string $password, DSUser $newUser, DSUser $user, IDataBaseCreateAccount $db): DSUser
+    public function createAccount(array $newUser, DSUser $user, IDataBaseCreateAccount $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountCreate");
 
-        return $db->createAccount($newUser, $password);
+        return $db->createAccount($newUser);
     }
 
-    public function signupAccount(string $password, DSUser $newUser, IDataBaseCreateAccount $db, ICheckForAuthenticatedUsers $iCheckForAuthenticatedUsers): DSUser
+    public function signupAccount(array $newUser, IDataBaseCreateAccount $db, ICheckForAuthenticatedUsers $iCheckForAuthenticatedUsers): DSUser
     {
         if (!$iCheckForAuthenticatedUsers->checkIfNoOneIsAuthenticated()) {
             throw new \RuntimeException("You're already loged in !!!", 500);
         }
 
-        return $db->createAccount($newUser, $password);
+        return $db->createAccount($newUser);
     }
 
     public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
     {
+        if ($user instanceof DSAdmin && $targetUser instanceof DSAdmin && $user->getId() !== $targetUser->getId()) {
+            throw new \RuntimeException("An admin user can not delete another admin user.", 403);
+        }
+
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountDelete");
 
@@ -89,17 +94,22 @@ class AccountsManagement
 
     public function updateAccount(array $input, DSUser $targetUser, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
+        if ($user instanceof DSAdmin && $targetUser instanceof DSAdmin && $user->getId() !== $targetUser->getId()) {
+            throw new \RuntimeException("An admin user can not update another admin user.", 403);
+        }
+
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountUpdate");
 
-        return $db->updateAccount($input, $targetUser);
+        return $db->massUpdateAccount($input, $targetUser);
     }
 
-    public function updateSelfAccount(array $input, DSUser $user, IDataBaseUpdateAccount $db): DSUser
+    public function updateSelfAccount(string $attribute, mixed $newValue, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "selfAccountUpdate");
+        $this->privilegesManagement->checkBool($user, "selfAccountUpdate" . ucfirst($attribute));
 
-        return $db->updateAccount($input, $user);
+        return $db->updateAccount($attribute, $newValue, $user);
     }
 }
