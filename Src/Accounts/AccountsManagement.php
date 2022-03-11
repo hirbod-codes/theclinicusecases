@@ -33,45 +33,45 @@ class AccountsManagement
      * @param IDataBaseRetrieveAccounts $db
      * @return \TheClinicDataStructures\DataStructures\User\DSUser[]
      */
-    public function getAccounts(int $lastAccountId = null, int $count, DSUser $user, IDataBaseRetrieveAccounts $db): array
+    public function getAccounts(int $lastAccountId = null, int $count, string $ruleName, DSUser $user, IDataBaseRetrieveAccounts $db): array
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountsRead");
 
-        return $db->getAccounts($lastAccountId, $count);
+        return $db->getAccounts($lastAccountId, $count, $ruleName);
     }
 
-    public function getAccount(int $accountId, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
+    public function getAccount(int $accountId, string $ruleName, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountRead");
 
-        return $db->getAccount($accountId);
+        return $db->getAccount($accountId, $ruleName);
     }
 
-    public function getSelfAccount(DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
+    public function getSelfAccount(string $ruleName, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "selfAccountRead");
 
-        return $db->getAccount($user->getId());
+        return $db->getAccount($user->getId(), $ruleName);
     }
 
-    public function createAccount(array $newUser, DSUser $user, IDataBaseCreateAccount $db): DSUser
+    public function createAccount(array $input, DSUser $user, IDataBaseCreateAccount $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountCreate");
 
-        return $db->createAccount($newUser);
+        return $db->createAccount($input);
     }
 
-    public function signupAccount(array $newUser, IDataBaseCreateAccount $db, ICheckForAuthenticatedUsers $iCheckForAuthenticatedUsers): DSUser
+    public function signupAccount(array $input, IDataBaseCreateAccount $db, ICheckForAuthenticatedUsers $iCheckForAuthenticatedUsers): DSUser
     {
         if (!$iCheckForAuthenticatedUsers->checkIfNoOneIsAuthenticated()) {
             throw new \RuntimeException("You're already loged in !!!", 500);
         }
 
-        return $db->createAccount($newUser);
+        return $db->createAccount($input);
     }
 
     public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
