@@ -46,39 +46,42 @@ class AccountsManagementTest extends TestCase
 
     public function testGetAccounts(): void
     {
+        $ruleName = 'admin';
         $id = $this->faker->numberBetween(1, 1000);
         $count = $this->faker->numberBetween(1, 30);
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveAccounts::class);
-        $db->shouldReceive("getAccounts")->with($id, $count)->andReturn([]);
+        $db->shouldReceive("getAccounts")->with($id, $count, $ruleName)->andReturn([]);
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountsRead");
 
-        $accounts = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccounts($id, $count, $this->user, $db);
+        $accounts = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccounts($id, $count, $ruleName, $this->user, $db);
         $this->assertIsArray($accounts);
     }
 
     public function testGetAccount(): void
     {
+        $ruleName = 'admin';
         $id = $this->faker->numberBetween(1, 1000);
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveAccounts::class);
-        $db->shouldReceive("getAccount")->with($id)->andReturn($this->user);
+        $db->shouldReceive("getAccount")->with($id, $ruleName)->andReturn($this->user);
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountRead");
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccount($id, $this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccount($id, $ruleName, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
     public function testGetSelfAccount(): void
     {
+        $ruleName = 'admin';
         $id = $this->faker->numberBetween(1, 1000);
         $this->user->shouldReceive("getId")->andReturn($id);
 
@@ -88,9 +91,9 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveAccounts::class);
-        $db->shouldReceive("getAccount")->with($this->user->getId())->andReturn($this->user);
+        $db->shouldReceive("getAccount")->with($this->user->getId(), $ruleName)->andReturn($this->user);
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getSelfAccount($this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getSelfAccount($ruleName,$this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
