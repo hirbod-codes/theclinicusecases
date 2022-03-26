@@ -145,7 +145,7 @@ class LaserOrderRetrievalTest extends TestCase
         $dsLaserOrders = Mockery::mock(DSLaserOrders::class);
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveLaserOrders|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveLaserOrders::class);
-        $db->shouldReceive("getLaserOrdersByTimeConsumption")->with($lastOrderId, $count, $operator, $price)->andReturn($dsLaserOrders);
+        $db->shouldReceive("getLaserOrdersByTimeConsumption")->with($count, $operator, $price, $lastOrderId)->andReturn($dsLaserOrders);
 
         $dsLaserOrders = (new LaserOrderRetrieval($this->authentication, $privilegesManagement))
             ->getLaserOrdersByTimeConsumption($lastOrderId, $count, $operator, $price, $this->user, $db);
@@ -195,7 +195,7 @@ class LaserOrderRetrievalTest extends TestCase
         $dsLaserOrders = Mockery::mock(DSLaserOrders::class);
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveLaserOrders|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveLaserOrders::class);
-        $db->shouldReceive("getLaserOrders")->with($lastOrderId, $count)->andReturn($dsLaserOrders);
+        $db->shouldReceive("getLaserOrders")->with($count, $lastOrderId)->andReturn($dsLaserOrders);
 
         $dsLaserOrders = (new LaserOrderRetrieval($this->authentication, $privilegesManagement))
             ->getLaserOrders($lastOrderId, $count, $this->user, $db);

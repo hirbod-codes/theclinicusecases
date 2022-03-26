@@ -38,11 +38,11 @@ interface IDataBaseRetrieveRegularOrders
      * @param DSUser $targetUser
      * @return DSRegularOrders
      */
-    public function getRegularOrdersByTimeConsumption(int $lastOrderId = null, int $count, string $operator, int $timeCosumption): DSRegularOrders;
+    public function getRegularOrdersByTimeConsumption(int $count, string $operator, int $timeCosumption, int $lastOrderId = null): DSRegularOrders;
 
     public function getRegularOrdersByUser(DSUser $targetUser): DSRegularOrders;
 
-    public function getRegularOrders(int $lastOrderId = null, int $count): DSRegularOrders;
+    public function getRegularOrders(int $count, int $lastOrderId = null): DSRegularOrders;
 
     public function getRegularOrderById(int $id): DSRegularOrder;
 }

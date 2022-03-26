@@ -82,7 +82,7 @@ class RegularOrderRetrieval
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "regularOrdersRead");
 
-        return $db->getRegularOrdersByTimeConsumption($lastOrderId, $count, $operator, $timeCosumption);
+        return $db->getRegularOrdersByTimeConsumption($count, $operator, $timeCosumption, $lastOrderId);
     }
 
     public function getRegularOrdersByUser(DSUser $targetUser, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
@@ -104,7 +104,7 @@ class RegularOrderRetrieval
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "regularOrdersRead");
 
-        return $db->getRegularOrders($lastOrderId, $count);
+        return $db->getRegularOrders($count, $lastOrderId);
     }
 
     public function getRegularOrderById(int $id, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrder

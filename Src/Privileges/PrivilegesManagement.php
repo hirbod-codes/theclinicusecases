@@ -10,7 +10,7 @@ class PrivilegesManagement
 {
     public function getUserPrivileges(DSUser $user): array
     {
-        return $user->getUserPrivileges();
+        return $user::getUserPrivileges();
     }
 
     public function getUserPrivilege(DSUser $user, string $privilege): mixed

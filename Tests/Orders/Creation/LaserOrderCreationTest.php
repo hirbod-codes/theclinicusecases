@@ -93,7 +93,7 @@ class LaserOrderCreationTest extends TestCase
         $dsLaserOrder = Mockery::mock(DSLaserOrder::class);
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseCreateLaserOrder::class);
-        $db->shouldReceive("createLaserOrder")->with($targetUser, $dsParts, $dsPackages, $price, $timeConsumption, $priceWithoutDiscount)->andReturn($dsLaserOrder);
+        $db->shouldReceive("createLaserOrder")->with($targetUser, $price, $timeConsumption, $priceWithoutDiscount, $dsParts, $dsPackages)->andReturn($dsLaserOrder);
 
         $this->iCalculateLaserOrder->shouldReceive("calculatePrice")->with($dsParts, $dsPackages, $this->iLaserPriceCalculator)->andReturn($price);
         $this->iCalculateLaserOrder->shouldReceive("calculateTimeConsumption")->with($dsParts, $dsPackages, $this->iLaserTimeConsumptionCalculator)->andReturn($timeConsumption);
@@ -106,7 +106,7 @@ class LaserOrderCreationTest extends TestCase
             $this->iLaserPriceCalculator,
             $this->iLaserTimeConsumptionCalculator
         ))
-            ->createLaserOrder($targetUser, $this->user, $dsParts, $dsPackages, $db);
+            ->createLaserOrder($targetUser, $this->user, $db, $dsParts, $dsPackages);
         $this->assertInstanceOf(DSLaserOrder::class, $order);
 
         try {
@@ -122,7 +122,7 @@ class LaserOrderCreationTest extends TestCase
                 $this->iLaserPriceCalculator,
                 $this->iLaserTimeConsumptionCalculator
             ))
-                ->createLaserOrder($targetUser, $this->user, $dsParts, $dsPackages, $db);
+                ->createLaserOrder($targetUser, $this->user, $db, $dsParts, $dsPackages);
 
             throw new \RuntimeException("Failure!!!", 500);
         } catch (InvalidGenderException $th) {
@@ -139,7 +139,7 @@ class LaserOrderCreationTest extends TestCase
                 $this->iLaserPriceCalculator,
                 $this->iLaserTimeConsumptionCalculator
             ))
-                ->createLaserOrder($targetUser, $this->user, $dsParts, $dsPackages, $db);
+                ->createLaserOrder($targetUser, $this->user, $db, $dsParts, $dsPackages);
 
             throw new \RuntimeException("Failure!!!", 500);
         } catch (NoPackageOrPartException $th) {

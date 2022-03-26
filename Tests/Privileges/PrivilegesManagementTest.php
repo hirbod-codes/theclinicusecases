@@ -23,13 +23,16 @@ class PrivilegesManagementTest extends TestCase
         parent::setUp();
 
         $this->faker = Factory::create();
-
-        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
-        $this->user = Mockery::mock(DSUser::class);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testGetUserPrivileges(): void
     {
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+        $this->user = Mockery::mock('alias:' . DSUser::class);
         $this->user->shouldReceive("getUserPrivileges")->andReturn([]);
 
         $privileges = (new PrivilegesManagement)->getUserPrivileges($this->user);
@@ -42,6 +45,8 @@ class PrivilegesManagementTest extends TestCase
     {
         $privilege = "privilege";
 
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+        $this->user = Mockery::mock(DSUser::class);
         $this->user->shouldReceive("getPrivilege")->with($privilege)->andReturn(true);
 
         $privilege = (new PrivilegesManagement)->getUserPrivilege($this->user, $privilege);
@@ -55,6 +60,8 @@ class PrivilegesManagementTest extends TestCase
         $privilege = "privilege";
         $value = true;
 
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+        $this->user = Mockery::mock(DSUser::class);
         $this->user->shouldReceive("setPrivilege")->with($privilege, $value)->andReturn(null);
 
         $result = (new PrivilegesManagement)->setUserPrivilege($this->user, $privilege, $value);
@@ -66,6 +73,8 @@ class PrivilegesManagementTest extends TestCase
     {
         $privilege = "ExampleBooleanPrivilege";
 
+        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
+        $this->user = Mockery::mock(DSUser::class);
         $this->user->shouldReceive("privilegeExists")->with($privilege)->andReturn(true);
         $this->user->shouldReceive("getPrivilege")->with($privilege)->andReturn(true);
 

@@ -52,7 +52,7 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveAccounts::class);
-        $db->shouldReceive("getAccounts")->with($id, $count, $ruleName)->andReturn([]);
+        $db->shouldReceive("getAccounts")->with($count, $ruleName, $id)->andReturn([]);
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
@@ -123,7 +123,7 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Accounts\ICheckForAuthenticatedUsers|\Mockery\MockInterface $iCheckForAuthenticatedUsers */
         $iCheckForAuthenticatedUsers = Mockery::mock(ICheckForAuthenticatedUsers::class);
-        $iCheckForAuthenticatedUsers->shouldReceive("checkIfNoOneIsAuthenticated")->andReturn(true);
+        $iCheckForAuthenticatedUsers->shouldReceive("checkIfThereIsNoAuthenticated")->andReturn(true);
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);

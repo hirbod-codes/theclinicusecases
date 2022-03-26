@@ -9,5 +9,5 @@ interface ICheckForAuthenticatedUsers
      *
      * @return boolean
      */
-    public function checkIfNoOneIsAuthenticated(): bool;
+    public function checkIfThereIsNoAuthenticated(): bool;
 }

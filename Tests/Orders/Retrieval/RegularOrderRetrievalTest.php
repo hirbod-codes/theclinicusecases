@@ -145,7 +145,7 @@ class RegularOrderRetrievalTest extends TestCase
         $dsRegularOrders = Mockery::mock(DSRegularOrders::class);
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveRegularOrders::class);
-        $db->shouldReceive("getRegularOrdersByTimeConsumption")->with($lastOrderId, $count, $operator, $price)->andReturn($dsRegularOrders);
+        $db->shouldReceive("getRegularOrdersByTimeConsumption")->with($count, $operator, $price, $lastOrderId)->andReturn($dsRegularOrders);
 
         $dsRegularOrders = (new RegularOrderRetrieval($this->authentication, $privilegesManagement))
             ->getRegularOrdersByTimeConsumption($lastOrderId, $count, $operator, $price, $this->user, $db);
@@ -195,7 +195,7 @@ class RegularOrderRetrievalTest extends TestCase
         $dsRegularOrders = Mockery::mock(DSRegularOrders::class);
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveRegularOrders::class);
-        $db->shouldReceive("getRegularOrders")->with($lastOrderId, $count)->andReturn($dsRegularOrders);
+        $db->shouldReceive("getRegularOrders")->with($count, $lastOrderId)->andReturn($dsRegularOrders);
 
         $dsRegularOrders = (new RegularOrderRetrieval($this->authentication, $privilegesManagement))
             ->getRegularOrders($lastOrderId, $count, $this->user, $db);

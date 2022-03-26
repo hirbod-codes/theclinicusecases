@@ -38,11 +38,11 @@ interface IDataBaseRetrieveLaserOrders
      * @param \TheClinicDataStructures\DataStructures\User\DSUser $targetUser
      * @return \TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrders
      */
-    public function getLaserOrdersByTimeConsumption(int $lastOrderId = null, int $count, string $operator, int $timeCosumption): DSLaserOrders;
+    public function getLaserOrdersByTimeConsumption(int $count, string $operator, int $timeCosumption, int $lastOrderId = null): DSLaserOrders;
 
     public function getLaserOrdersByUser(DSUser $targetUser): DSLaserOrders;
 
-    public function getLaserOrders(int $lastOrderId = null, int $count): DSLaserOrders;
+    public function getLaserOrders(int $count, int $lastOrderId = null): DSLaserOrders;
 
     public function getLaserOrderById(int $id): DSLaserOrder;
 }

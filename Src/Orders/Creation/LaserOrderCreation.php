@@ -45,7 +45,7 @@ class LaserOrderCreation
         $this->privilegesManagement = $privilegesManagement ?: new PrivilegesManagement;
     }
 
-    public function createLaserOrder(DSUser $targetUser, DSUser $user, ?DSParts $parts = null, ?DSPackages $packages = null, IDataBaseCreateLaserOrder $db): DSLaserOrder
+    public function createLaserOrder(DSUser $targetUser, DSUser $user, IDataBaseCreateLaserOrder $db, ?DSParts $parts = null, ?DSPackages $packages = null): DSLaserOrder
     {
         if ($targetUser->getId() === $user->getId()) {
             $privilege = "selfLaserOrderCreate";
@@ -64,11 +64,11 @@ class LaserOrderCreation
 
         return $db->createLaserOrder(
             $targetUser,
-            $parts,
-            $packages,
             $this->iCalculateLaserOrder->calculatePrice($parts, $packages, $this->iLaserPriceCalculator),
             $this->iCalculateLaserOrder->calculateTimeConsumption($parts, $packages, $this->iLaserTimeConsumptionCalculator),
-            $this->iCalculateLaserOrder->calculatePriceWithoutDiscount($parts, $packages, $this->iLaserPriceCalculator)
+            $this->iCalculateLaserOrder->calculatePriceWithoutDiscount($parts, $packages, $this->iLaserPriceCalculator),
+            $parts,
+            $packages
         );
     }
 }

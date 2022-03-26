@@ -82,7 +82,7 @@ class LaserOrderRetrieval
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "laserOrdersRead");
 
-        return $db->getLaserOrdersByTimeConsumption($lastOrderId, $count, $operator, $timeCosumption);
+        return $db->getLaserOrdersByTimeConsumption($count, $operator, $timeCosumption, $lastOrderId);
     }
 
     public function getLaserOrdersByUser(DSUser $targetUser, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrders
@@ -104,7 +104,7 @@ class LaserOrderRetrieval
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "laserOrdersRead");
 
-        return $db->getLaserOrders($lastOrderId, $count);
+        return $db->getLaserOrders($count, $lastOrderId);
     }
 
     public function getLaserOrderById(int $id, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrder

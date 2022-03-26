@@ -38,7 +38,7 @@ class AccountsManagement
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountsRead");
 
-        return $db->getAccounts($lastAccountId, $count, $ruleName);
+        return $db->getAccounts($count, $ruleName, $lastAccountId);
     }
 
     public function getAccount(int $accountId, string $ruleName, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
@@ -67,7 +67,7 @@ class AccountsManagement
 
     public function signupAccount(array $input, IDataBaseCreateAccount $db, ICheckForAuthenticatedUsers $iCheckForAuthenticatedUsers): DSUser
     {
-        if (!$iCheckForAuthenticatedUsers->checkIfNoOneIsAuthenticated()) {
+        if (!$iCheckForAuthenticatedUsers->checkIfThereIsNoAuthenticated()) {
             throw new \RuntimeException("You're already loged in !!!", 500);
         }
 

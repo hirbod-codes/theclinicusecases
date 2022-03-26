@@ -9,5 +9,5 @@ use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseCreateLaserOrder
 {
-    public function createLaserOrder(DSUser $user, ?DSParts $parts = null, ?DSPackages $packages = null, int $price, int $timeConsumption, int $priceWithoutDiscount): DSLaserOrder;
+    public function createLaserOrder(DSUser $user, int $price, int $timeConsumption, int $priceWithoutDiscount, ?DSParts $parts = null, ?DSPackages $packages = null): DSLaserOrder;
 }
