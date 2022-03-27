@@ -2,25 +2,52 @@
 
 namespace TheClinicUseCases\Privileges;
 
+use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSUser;
+use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 
 class PrivilegesManagement
 {
-    public function getUserPrivileges(DSUser $user): array
+    private Authentication $authentication;
+
+    public function __construct(
+        Authentication|null $authentication = null
+    ) {
+        $this->authentication = $authentication ?: new Authentication;
+    }
+
+    /**
+     * @param DSAdmin $user
+     * @return array<string, string> [ "privilege_name" => privilege_value, ... ] 
+     */
+    public function getPrivileges(DSAdmin $user): array
     {
+        $this->authentication->check($user);
+
+        return DSUser::getPrivileges();
+    }
+
+    public function getUserPrivileges(DSAdmin $readerUser, DSUser $targetUser): array
+    {
+        $this->authentication->check($readerUser);
+
+        return $targetUser::getUserPrivileges();
+    }
+
+    public function getSelfPrivileges(DSUser $user): array
+    {
+        $this->authentication->check($user);
+
         return $user::getUserPrivileges();
     }
 
-    public function getUserPrivilege(DSUser $user, string $privilege): mixed
+    public function setUserPrivilege(DSAdmin $user, DSUser $targetUser, string $privilege, mixed $value): void
     {
-        return $user->getPrivilege($privilege);
-    }
+        $this->authentication->check($user);
 
-    public function setUserPrivilege(DSUser $user, string $privilege, mixed $value): void
-    {
-        $user->setPrivilege($privilege, $value);
+        $targetUser->setPrivilege($privilege, $value);
     }
 
     /**
