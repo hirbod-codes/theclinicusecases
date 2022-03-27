@@ -7,7 +7,11 @@ use Faker\Generator;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use TheClinicDataStructures\DataStructures\User\DSAdmin;
+use TheClinicDataStructures\DataStructures\User\DSPatient;
 use TheClinicDataStructures\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
+use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
@@ -18,55 +22,137 @@ class PrivilegesManagementTest extends TestCase
 
     private DSUser|MockInterface $user;
 
+    private DSUser|MockInterface $dsUser;
+
+    private DSUser|MockInterface $authenticated;
+
+    private Authentication|MockInterface $authentication;
+
+    private bool $first = true;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->faker = Factory::create();
+
+        $this->authenticated = $this->makeAuthenticatable(true);
+
+        $this->dsUser = $this->makeAuthenticatable(false);
+
+        /** @var Authentication|\Mockery\MockInterface $authentication */
+        $this->authentication = Mockery::mock(Authentication::class);
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
+    private function makeAuthenticatable($admin = false): DSUser
+    {
+        /** @var IcheckAuthentication|\Mockery\MockInterface $icheckAuthentication */
+        $icheckAuthentication = Mockery::mock(ICheckAuthentication::class);
+
+        if ($admin === true) {
+            return new DSAdmin(
+                $icheckAuthentication,
+                $this->faker->numberBetween(1, 100),
+                $this->faker->firstName(),
+                $this->faker->lastNAme(),
+                $this->faker->userName(),
+                $this->faker->randomElement(['Male', 'Female']),
+                $this->faker->phoneNumber(),
+                new \DateTime,
+                new \DateTime,
+                new \DateTime,
+                $this->faker->safeEmail(),
+                new \DateTime,
+                null,
+                null
+            );
+        } else {
+            return new DSPatient(
+                $icheckAuthentication,
+                $this->faker->numberBetween(1, 100),
+                $this->faker->firstName(),
+                $this->faker->lastNAme(),
+                $this->faker->userName(),
+                $this->faker->randomElement(['Male', 'Female']),
+                $this->faker->phoneNumber(),
+                new \DateTime,
+                new \DateTime,
+                new \DateTime,
+                $this->faker->safeEmail(),
+                new \DateTime,
+                null,
+                null
+            );
+        }
+    }
+
+    private function instantiate(): PrivilegesManagement
+    {
+        return new PrivilegesManagement($this->authentication);
+    }
+
+    public function testGetPrivileges(): void
+    {
+        $this->authentication->shouldReceive('check')->with($this->authenticated);
+
+        $array = $this->instantiate()->getPrivileges($this->authenticated);
+
+        $privileges = DSUser::getPrivileges();
+
+        foreach ($array as $key => $value) {
+            $this->assertNotFalse(array_search($key, array_keys($privileges)));
+            $this->assertEquals($privileges[$key], $value);
+        }
+    }
+
     public function testGetUserPrivileges(): void
     {
-        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
-        $this->user = Mockery::mock('alias:' . DSUser::class);
-        $this->user->shouldReceive("getUserPrivileges")->andReturn([]);
+        $this->authentication->shouldReceive('check')->with($this->authenticated);
 
-        $privileges = (new PrivilegesManagement)->getUserPrivileges($this->user);
+        $privileges = $this->dsUser::getUserPrivileges();
 
-        $this->assertIsArray($privileges);
-        $this->assertCount(0, $privileges);
+        $array = $this->instantiate()->getUserPrivileges($this->authenticated, $this->dsUser);
+
+        $this->assertIsArray($array);
+        $this->assertCount(count($privileges), $array);
+
+        foreach ($privileges as $key => $value) {
+            $this->assertNotFalse(array_search($key, array_keys($array)));
+            $this->assertEquals($value, $array[$key]);
+        }
     }
 
-    public function testGetUserPrivilege(): void
+    public function testGetSelfPrivileges(): void
     {
-        $privilege = "privilege";
+        $this->authentication->shouldReceive('check')->with($this->dsUser);
 
-        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
-        $this->user = Mockery::mock(DSUser::class);
-        $this->user->shouldReceive("getPrivilege")->with($privilege)->andReturn(true);
+        $privileges = $this->dsUser::getUserPrivileges();
 
-        $privilege = (new PrivilegesManagement)->getUserPrivilege($this->user, $privilege);
+        $array = $this->instantiate()->getSelfPrivileges($this->dsUser);
+        $this->assertIsArray($array);
+        $this->assertCount(count($privileges), $array);
 
-        $this->assertIsBool($privilege);
-        $this->assertEquals(true, $privilege);
+        foreach ($privileges as $key => $value) {
+            $this->assertNotFalse(array_search($key, array_keys($array)));
+            $this->assertEquals($value, $array[$key]);
+        }
     }
 
     public function testSetUserPrivilege(): void
     {
-        $privilege = "privilege";
-        $value = true;
+        try {
+            $privilege = "selfAccountRead";
 
-        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
-        $this->user = Mockery::mock(DSUser::class);
-        $this->user->shouldReceive("setPrivilege")->with($privilege, $value)->andReturn(null);
+            $this->authentication->shouldReceive('check')->with($this->authenticated);
 
-        $result = (new PrivilegesManagement)->setUserPrivilege($this->user, $privilege, $value);
+            $instance = $this->instantiate();
+            $result = $instance->setUserPrivilege($this->authenticated, $this->dsUser, $privilege, false);
 
-        $this->assertNull($result);
+            $this->assertNull($result);
+            $this->assertEquals(false, $this->dsUser::getUserPrivileges()[$privilege]);
+        } finally {
+            $instance->setUserPrivilege($this->authenticated, $this->dsUser, $privilege, true);
+        }
     }
 
     public function testCheckBool(): void
