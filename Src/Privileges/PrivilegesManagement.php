@@ -5,6 +5,7 @@ namespace TheClinicUseCases\Privileges;
 use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
+use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToSetAdminPrivilege;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 
@@ -20,7 +21,7 @@ class PrivilegesManagement
 
     /**
      * @param DSAdmin $user
-     * @return array<string, string> [ "privilege_name" => privilege_value, ... ] 
+     * @return string[]
      */
     public function getPrivileges(DSAdmin $user): array
     {
@@ -46,6 +47,10 @@ class PrivilegesManagement
     public function setUserPrivilege(DSAdmin $user, DSUser $targetUser, string $privilege, mixed $value): void
     {
         $this->authentication->check($user);
+
+        if ($targetUser instanceof DSAdmin) {
+            throw new AdminTemptsToSetAdminPrivilege();
+        }
 
         $targetUser->setPrivilege($privilege, $value);
     }
