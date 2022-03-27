@@ -12,6 +12,7 @@ use TheClinicDataStructures\DataStructures\User\DSPatient;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
 use TheClinicUseCases\Accounts\Authentication;
+use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToSetAdminPrivilege;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
@@ -150,6 +151,12 @@ class PrivilegesManagementTest extends TestCase
 
             $this->assertNull($result);
             $this->assertEquals(false, $this->dsUser::getUserPrivileges()[$privilege]);
+
+            try {
+                $result = $instance->setUserPrivilege($this->authenticated, $this->makeAuthenticatable(true), $privilege, false);
+                throw new \RuntimeException('Failure!!!');
+            } catch (AdminTemptsToSetAdminPrivilege $th) {
+            }
         } finally {
             $instance->setUserPrivilege($this->authenticated, $this->dsUser, $privilege, true);
         }
