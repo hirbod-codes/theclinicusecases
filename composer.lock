@@ -54,16 +54,16 @@
         },
         {
             "name": "hirbod-codes/theclinicdatastructures",
-            "version": "v1.13.1",
+            "version": "v1.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hirbod-codes/theclinicdatastructures.git",
-                "reference": "d6a8a8805a35f84293686b6a2df83a380cecc78c"
+                "reference": "21b37b7d18c3c8b5d12b6bf6d67c1d3c38df7b5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hirbod-codes/theclinicdatastructures/zipball/d6a8a8805a35f84293686b6a2df83a380cecc78c",
-                "reference": "d6a8a8805a35f84293686b6a2df83a380cecc78c",
+                "url": "https://api.github.com/repos/hirbod-codes/theclinicdatastructures/zipball/21b37b7d18c3c8b5d12b6bf6d67c1d3c38df7b5d",
+                "reference": "21b37b7d18c3c8b5d12b6bf6d67c1d3c38df7b5d",
                 "shasum": ""
             },
             "require": {
@@ -93,9 +93,9 @@
             "description": "The data structures of theclinic project.",
             "support": {
                 "issues": "https://github.com/hirbod-codes/theclinicdatastructures/issues",
-                "source": "https://github.com/hirbod-codes/theclinicdatastructures/tree/v1.13.1"
+                "source": "https://github.com/hirbod-codes/theclinicdatastructures/tree/v1.13.2"
             },
-            "time": "2022-03-23T17:51:42+00:00"
+            "time": "2022-03-29T04:04:51+00:00"
         }
     ],
     "packages-dev": [
@@ -698,16 +698,16 @@
         },
         {
             "name": "phpdocumentor/type-resolver",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "93ebd0014cab80c4ea9f5e297ea48672f1b87706"
+                "reference": "77a32518733312af16a44300404e945338981de3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/93ebd0014cab80c4ea9f5e297ea48672f1b87706",
-                "reference": "93ebd0014cab80c4ea9f5e297ea48672f1b87706",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/77a32518733312af16a44300404e945338981de3",
+                "reference": "77a32518733312af16a44300404e945338981de3",
                 "shasum": ""
             },
             "require": {
@@ -742,9 +742,9 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.6.0"
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.6.1"
             },
-            "time": "2022-01-04T19:58:01+00:00"
+            "time": "2022-03-15T21:29:03+00:00"
         },
         {
             "name": "phpspec/prophecy",
