@@ -43,6 +43,4 @@ interface IDataBaseRetrieveLaserOrders
     public function getLaserOrdersByUser(DSUser $targetUser): DSLaserOrders;
 
     public function getLaserOrders(int $count, int $lastOrderId = null): DSLaserOrders;
-
-    public function getLaserOrderById(int $id): DSLaserOrder;
 }

@@ -106,12 +106,4 @@ class LaserOrderRetrieval
 
         return $db->getLaserOrders($count, $lastOrderId);
     }
-
-    public function getLaserOrderById(int $id, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrder
-    {
-        $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "laserOrdersRead");
-
-        return $db->getLaserOrderById($id);
-    }
 }
