@@ -43,6 +43,4 @@ interface IDataBaseRetrieveRegularOrders
     public function getRegularOrdersByUser(DSUser $targetUser): DSRegularOrders;
 
     public function getRegularOrders(int $count, int $lastOrderId = null): DSRegularOrders;
-
-    public function getRegularOrderById(int $id): DSRegularOrder;
 }

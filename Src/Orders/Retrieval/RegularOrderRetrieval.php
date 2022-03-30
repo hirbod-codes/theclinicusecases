@@ -106,12 +106,4 @@ class RegularOrderRetrieval
 
         return $db->getRegularOrders($count, $lastOrderId);
     }
-
-    public function getRegularOrderById(int $id, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrder
-    {
-        $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "regularOrdersRead");
-
-        return $db->getRegularOrderById($id);
-    }
 }
