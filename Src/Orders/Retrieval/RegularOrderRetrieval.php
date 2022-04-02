@@ -55,7 +55,7 @@ class RegularOrderRetrieval
         return $db->getRegularOrdersByPrice($lastOrderId, $count, $operator, $price);
     }
 
-    public function getRegularOrdersByTimeConsumptionByUser(string $operator, int $timeCosumption, DSUser $targetUser, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
+    public function getRegularOrdersByTimeConsumptionByUser(string $operator, int $timeConsumption, DSUser $targetUser, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
     {
         if (!in_array($operator, self::$operatorValues)) {
             throw new \RuntimeException("The operator parameter has an invalid value.", 500);
@@ -70,10 +70,10 @@ class RegularOrderRetrieval
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        return $db->getRegularOrdersByTimeConsumptionByUser($operator, $timeCosumption, $targetUser);
+        return $db->getRegularOrdersByTimeConsumptionByUser($operator, $timeConsumption, $targetUser);
     }
 
-    public function getRegularOrdersByTimeConsumption(int $lastOrderId = null, int $count, string $operator, int $timeCosumption, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
+    public function getRegularOrdersByTimeConsumption(int $lastOrderId = null, int $count, string $operator, int $timeConsumption, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
     {
         if (!in_array($operator, self::$operatorValues)) {
             throw new \RuntimeException("The operator parameter has an invalid value.", 500);
@@ -82,7 +82,7 @@ class RegularOrderRetrieval
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "regularOrdersRead");
 
-        return $db->getRegularOrdersByTimeConsumption($count, $operator, $timeCosumption, $lastOrderId);
+        return $db->getRegularOrdersByTimeConsumption($count, $operator, $timeConsumption, $lastOrderId);
     }
 
     public function getRegularOrdersByUser(DSUser $targetUser, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
