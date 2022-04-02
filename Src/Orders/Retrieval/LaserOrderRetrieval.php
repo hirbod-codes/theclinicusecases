@@ -55,7 +55,7 @@ class LaserOrderRetrieval
         return $db->getLaserOrdersByPrice($lastOrderId, $count, $operator, $price);
     }
 
-    public function getLaserOrdersByTimeConsumptionByUser(string $operator, int $timeCosumption, DSUser $targetUser, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrders
+    public function getLaserOrdersByTimeConsumptionByUser(string $operator, int $timeConsumption, DSUser $targetUser, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrders
     {
         if (!in_array($operator, self::$operatorValues)) {
             throw new \RuntimeException("The operator parameter has an invalid value.", 500);
@@ -70,10 +70,10 @@ class LaserOrderRetrieval
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        return $db->getLaserOrdersByTimeConsumptionByUser($operator, $timeCosumption, $targetUser);
+        return $db->getLaserOrdersByTimeConsumptionByUser($operator, $timeConsumption, $targetUser);
     }
 
-    public function getLaserOrdersByTimeConsumption(int $lastOrderId = null, int $count, string $operator, int $timeCosumption, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrders
+    public function getLaserOrdersByTimeConsumption(int $lastOrderId = null, int $count, string $operator, int $timeConsumption, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrders
     {
         if (!in_array($operator, self::$operatorValues)) {
             throw new \RuntimeException("The operator parameter has an invalid value.", 500);
@@ -82,7 +82,7 @@ class LaserOrderRetrieval
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "laserOrdersRead");
 
-        return $db->getLaserOrdersByTimeConsumption($count, $operator, $timeCosumption, $lastOrderId);
+        return $db->getLaserOrdersByTimeConsumption($count, $operator, $timeConsumption, $lastOrderId);
     }
 
     public function getLaserOrdersByUser(DSUser $targetUser, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrders
