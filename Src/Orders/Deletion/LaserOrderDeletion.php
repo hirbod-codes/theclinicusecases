@@ -6,10 +6,13 @@ use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseDeleteLaserOrder;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class LaserOrderDeletion
 {
+    use TraitGetPrivilegeFromInput;
+
     private Authentication $authentication;
 
     private PrivilegesManagement $privilegesManagement;
@@ -22,17 +25,13 @@ class LaserOrderDeletion
         $this->privilegesManagement = $privilegesManagement ?: new PrivilegesManagement;
     }
 
-    public function deleteLaserOrder(DSLaserOrder $laserOrder, DSUser $user, IDataBaseDeleteLaserOrder $db): void
+    public function deleteLaserOrder(DSLaserOrder $laserOrder, DSUser $targetUser, DSUser $user, IDataBaseDeleteLaserOrder $db): void
     {
-        if ($user->getId() === $laserOrder->getUser()->getId()) {
-            $privilege = "selfLaserOrderDelete";
-        } else {
-            $privilege = "laserOrderDelete";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserOrderDelete", "laserOrderDelete");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        $db->deleteLaserOrder($laserOrder, $user);
+        $db->deleteLaserOrder($laserOrder, $targetUser);
     }
 }

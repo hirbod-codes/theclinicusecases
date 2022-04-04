@@ -3,13 +3,17 @@
 namespace TheClinicUseCases\Orders\Deletion;
 
 use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
+use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseDeleteRegularOrder;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class RegularOrderDeletion
 {
+    use TraitGetPrivilegeFromInput;
+
     private Authentication $authentication;
 
     private PrivilegesManagement $privilegesManagement;
@@ -22,17 +26,14 @@ class RegularOrderDeletion
         $this->privilegesManagement = $privilegesManagement ?: new PrivilegesManagement;
     }
 
-    public function deleteRegularOrder(DSRegularOrder $regularOrder, DSUser $user, IDataBaseDeleteRegularOrder $db): void
+    public function deleteRegularOrder(DSRegularOrder $regularOrder, DSUser $targetUser, DSUser $user, IDataBaseDeleteRegularOrder $db): void
     {
-        if ($user->getId() === $regularOrder->getUser()->getId()) {
-            $privilege = "selfRegularOrderDelete";
-        } else {
-            $privilege = "regularOrderDelete";
-        }
-
         $this->authentication->check($user);
+
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfRegularOrderDelete", "regularOrderDelete");
+
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        $db->deleteRegularOrder($regularOrder, $user);
+        $db->deleteRegularOrder($regularOrder, $targetUser);
     }
 }
