@@ -6,5 +6,5 @@ use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseDeleteAccount
 {
-    public function deleteAccount(DSUser $user): void;
+    public function deleteAccount(DSUser $targetUser): void;
 }
