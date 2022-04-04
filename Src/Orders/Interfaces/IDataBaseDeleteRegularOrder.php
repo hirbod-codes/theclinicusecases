@@ -7,5 +7,5 @@ use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseDeleteRegularOrder
 {
-    public function deleteRegularOrder(DSRegularOrder $regularOrder, DSUser $user): void;
+    public function deleteRegularOrder(DSRegularOrder $regularOrder, DSUser $targetUser): void;
 }
