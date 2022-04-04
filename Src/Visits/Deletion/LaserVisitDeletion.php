@@ -5,11 +5,14 @@ namespace TheClinicUseCases\Visits\Deletion;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit;
 use TheClinicUseCases\Accounts\Authentication;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 use TheClinicUseCases\Visits\Interfaces\IDataBaseDeleteVisit;
 
 class LaserVisitDeletion
 {
+    use TraitGetPrivilegeFromInput;
+
     private Authentication $authentication;
 
     private PrivilegesManagement $privilegesManagement;
@@ -22,17 +25,13 @@ class LaserVisitDeletion
         $this->privilegesManagement = $privilegesManagement;
     }
 
-    public function delete(DSLaserVisit $dsLaserVisit, DSUser $user, IDataBaseDeleteVisit $db): void
+    public function delete(DSLaserVisit $dsLaserVisit, DSUser $targetUser, DSUser $user, IDataBaseDeleteVisit $db): void
     {
-        if ($dsLaserVisit->getOrder()->getUser()->getId() === $user->getId()) {
-            $privilege = "selfLaserVisitDelete";
-        } else {
-            $privilege = "laserVisitDelete";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserVisitDelete", "laserVisitDelete");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        $db->deleteLaserVisit($dsLaserVisit);
+        $db->deleteLaserVisit($dsLaserVisit, $targetUser);
     }
 }
