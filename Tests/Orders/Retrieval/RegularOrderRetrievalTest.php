@@ -201,23 +201,4 @@ class RegularOrderRetrievalTest extends TestCase
             ->getRegularOrders($lastOrderId, $count, $this->user, $db);
         $this->assertInstanceOf(DSRegularOrders::class, $dsRegularOrders);
     }
-
-    public function testGetRegularOrderById(): void
-    {
-        $id = $this->faker->numberBetween(1, 1000);
-
-        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
-        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "regularOrdersRead");
-
-        /** @var \TheClinic\DataStructures\Order\Regular\DSRegularOrder|\Mockery\MockInterface $dsRegularOrder */
-        $dsRegularOrder = Mockery::mock(DSRegularOrder::class);
-        /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders|\Mockery\MockInterface $db */
-        $db = Mockery::mock(IDataBaseRetrieveRegularOrders::class);
-        $db->shouldReceive("getRegularOrderById")->with($id)->andReturn($dsRegularOrder);
-
-        $dsRegularOrders = (new RegularOrderRetrieval($this->authentication, $privilegesManagement))
-            ->getRegularOrderById($id, $this->user, $db);
-        $this->assertInstanceOf(DSRegularOrder::class, $dsRegularOrders);
-    }
 }
