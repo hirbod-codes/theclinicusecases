@@ -7,10 +7,13 @@ use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrders;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveRegularOrders;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class RegularOrderRetrieval
 {
+    use TraitGetPrivilegeFromInput;
+
     private static array $operatorValues = ["<=", ">=", "=", "<>", "<", ">"];
 
     private Authentication $authentication;
@@ -31,11 +34,7 @@ class RegularOrderRetrieval
             throw new \RuntimeException("The operator parameter has an invalid value.", 500);
         }
 
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfRegularOrdersRead";
-        } else {
-            $privilege = "regularOrdersRead";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfRegularOrdersRead", "regularOrdersRead");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
@@ -61,11 +60,7 @@ class RegularOrderRetrieval
             throw new \RuntimeException("The operator parameter has an invalid value.", 500);
         }
 
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfRegularOrdersRead";
-        } else {
-            $privilege = "regularOrdersRead";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfRegularOrdersRead", "regularOrdersRead");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
@@ -87,11 +82,7 @@ class RegularOrderRetrieval
 
     public function getRegularOrdersByUser(DSUser $targetUser, DSUser $user, IDataBaseRetrieveRegularOrders $db): DSRegularOrders
     {
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfRegularOrdersRead";
-        } else {
-            $privilege = "regularOrdersRead";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfRegularOrdersRead", "regularOrdersRead");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);

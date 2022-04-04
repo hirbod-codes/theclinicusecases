@@ -7,10 +7,13 @@ use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrders;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveLaserOrders;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class LaserOrderRetrieval
 {
+    use TraitGetPrivilegeFromInput;
+
     private static array $operatorValues = ["<=", ">=", "=", "<>", "<", ">"];
 
     private Authentication $authentication;
@@ -31,11 +34,7 @@ class LaserOrderRetrieval
             throw new \RuntimeException("The operator parameter has an invalid value.", 500);
         }
 
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfLaserOrdersRead";
-        } else {
-            $privilege = "laserOrdersRead";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserOrdersRead", "laserOrdersRead");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
@@ -61,11 +60,7 @@ class LaserOrderRetrieval
             throw new \RuntimeException("The operator parameter has an invalid value.", 500);
         }
 
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfLaserOrdersRead";
-        } else {
-            $privilege = "laserOrdersRead";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserOrdersRead", "laserOrdersRead");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
@@ -87,11 +82,7 @@ class LaserOrderRetrieval
 
     public function getLaserOrdersByUser(DSUser $targetUser, DSUser $user, IDataBaseRetrieveLaserOrders $db): DSLaserOrders
     {
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfLaserOrdersRead";
-        } else {
-            $privilege = "laserOrdersRead";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserOrdersRead", "laserOrdersRead");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
