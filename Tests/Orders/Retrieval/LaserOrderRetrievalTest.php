@@ -201,23 +201,4 @@ class LaserOrderRetrievalTest extends TestCase
             ->getLaserOrders($lastOrderId, $count, $this->user, $db);
         $this->assertInstanceOf(DSLaserOrders::class, $dsLaserOrders);
     }
-
-    public function testGetLaserOrderById(): void
-    {
-        $id = $this->faker->numberBetween(1, 1000);
-
-        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
-        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "laserOrdersRead");
-
-        /** @var \TheClinic\DataStructures\Order\Laser\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
-        $dsLaserOrder = Mockery::mock(DSLaserOrder::class);
-        /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseRetrieveLaserOrders|\Mockery\MockInterface $db */
-        $db = Mockery::mock(IDataBaseRetrieveLaserOrders::class);
-        $db->shouldReceive("getLaserOrderById")->with($id)->andReturn($dsLaserOrder);
-
-        $dsLaserOrders = (new LaserOrderRetrieval($this->authentication, $privilegesManagement))
-            ->getLaserOrderById($id, $this->user, $db);
-        $this->assertInstanceOf(DSLaserOrder::class, $dsLaserOrders);
-    }
 }
