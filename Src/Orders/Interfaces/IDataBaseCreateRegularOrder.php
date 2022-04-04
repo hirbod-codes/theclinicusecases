@@ -7,5 +7,5 @@ use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseCreateRegularOrder
 {
-    public function createRegularOrder(DSUser $user, int $price, int $timeConsumption): DSRegularOrder;
+    public function createRegularOrder(DSUser $targetUser, int $price, int $timeConsumption): DSRegularOrder;
 }
