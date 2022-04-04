@@ -7,11 +7,14 @@ use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicDataStructures\DataStructures\Visit\Regular\DSRegularVisit;
 use TheClinicUseCases\Accounts\Authentication;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 use TheClinicUseCases\Visits\Interfaces\IDataBaseCreateVisit;
 
 class RegularVisitCreation
 {
+    use TraitGetPrivilegeFromInput;
+
     private Authentication $authentication;
 
     private PrivilegesManagement $privilegesManagement;
@@ -29,17 +32,13 @@ class RegularVisitCreation
         $this->iFindVisit = $iFindVisit;
     }
 
-    public function create(DSRegularOrder $dsRegularOrder, DSUser $user, IDataBaseCreateVisit $db): DSRegularVisit
+    public function create(DSRegularOrder $dsRegularOrder, DSUser $targetUser, DSUser $user, IDataBaseCreateVisit $db): DSRegularVisit
     {
-        if ($dsRegularOrder->getUser()->getId() === $user->getId()) {
-            $privilege = "selfRegularVisitCreate";
-        } else {
-            $privilege = "regularVisitCreate";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfRegularVisitCreate", "regularVisitCreate");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        return $db->createRegularVisit($dsRegularOrder, $this->iFindVisit->findVisit());
+        return $db->createRegularVisit($dsRegularOrder, $targetUser, $this->iFindVisit->findVisit());
     }
 }

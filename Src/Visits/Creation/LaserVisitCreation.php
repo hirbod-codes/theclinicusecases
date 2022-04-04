@@ -7,11 +7,14 @@ use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit;
 use TheClinicUseCases\Accounts\Authentication;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 use TheClinicUseCases\Visits\Interfaces\IDataBaseCreateVisit;
 
 class LaserVisitCreation
 {
+    use TraitGetPrivilegeFromInput;
+
     private Authentication $authentication;
 
     private PrivilegesManagement $privilegesManagement;
@@ -29,17 +32,13 @@ class LaserVisitCreation
         $this->iFindVisit = $iFindVisit;
     }
 
-    public function create(DSLaserOrder $dsLaserOrder, DSUser $user, IDataBaseCreateVisit $db): DSLaserVisit
+    public function create(DSLaserOrder $dsLaserOrder, DSUser $targetUser, DSUser $user, IDataBaseCreateVisit $db): DSLaserVisit
     {
-        if ($dsLaserOrder->getUser()->getId() === $user->getId()) {
-            $privilege = "selfLaserVisitCreate";
-        } else {
-            $privilege = "laserVisitCreate";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserVisitCreate", "laserVisitCreate");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        return $db->createLaserVisit($dsLaserOrder, $this->iFindVisit->findVisit());
+        return $db->createLaserVisit($dsLaserOrder, $targetUser, $this->iFindVisit->findVisit());
     }
 }
