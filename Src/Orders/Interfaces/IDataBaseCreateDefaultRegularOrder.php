@@ -7,5 +7,5 @@ use TheClinicDataStructures\DataStructures\User\DSUser;
 
 interface IDataBaseCreateDefaultRegularOrder
 {
-    public function createDefaultRegularOrder(DSUser $user): DSRegularOrder;
+    public function createDefaultRegularOrder(DSUser $targetUser): DSRegularOrder;
 }
