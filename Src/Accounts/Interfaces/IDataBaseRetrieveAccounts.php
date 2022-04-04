@@ -11,5 +11,5 @@ interface IDataBaseRetrieveAccounts
      */
     public function getAccounts(int $count, string $ruleName, ?int $lastVisitId = null): array;
 
-    public function getAccount(int $Id, string $ruleName): DSUser;
+    public function getAccount(string $targetUserUsername): DSUser;
 }
