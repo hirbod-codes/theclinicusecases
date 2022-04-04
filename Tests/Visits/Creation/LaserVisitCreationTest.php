@@ -53,7 +53,6 @@ class LaserVisitCreationTest extends TestCase
 
         /** @var \TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
         $dsLaserOrder = Mockery::mock(DSLaserOrder::class);
-        $dsLaserOrder->shouldReceive("getUser")->andReturn($targetUser);
 
         /** @var \TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit|\Mockery\MockInterface $dsLaserVisit */
         $dsLaserVisit = Mockery::mock(DSLaserVisit::class);
@@ -64,9 +63,9 @@ class LaserVisitCreationTest extends TestCase
 
         /** @var \TheClinicUseCases\Visits\Interfaces\IDataBaseCreateVisit|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseCreateVisit::class);
-        $db->shouldReceive("createLaserVisit")->with($dsLaserOrder, $timestamp)->andReturn($dsLaserVisit);
+        $db->shouldReceive("createLaserVisit")->with($dsLaserOrder, $targetUser, $timestamp)->andReturn($dsLaserVisit);
 
-        $createdVisit = (new LaserVisitCreation($authentication, $privilegeManagement, $iFindVisit))->create($dsLaserOrder, $user, $db);
+        $createdVisit = (new LaserVisitCreation($authentication, $privilegeManagement, $iFindVisit))->create($dsLaserOrder, $targetUser, $user, $db);
         $this->assertInstanceOf(DSLaserVisit::class, $createdVisit);
     }
 }
