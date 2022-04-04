@@ -57,16 +57,15 @@ class RegularOrderDeletionTest extends TestCase
 
         /** @var \TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder|\Mockery\MockInterface $regularOrder */
         $regularOrder = Mockery::mock(DSRegularOrder::class);
-        $regularOrder->shouldReceive("getUser")->andReturn($anotherUser);
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseDeleteRegularOrder|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseDeleteRegularOrder::class);
-        $db->shouldReceive("deleteRegularOrder")->with($regularOrder, $this->user)->andReturn(null);
+        $db->shouldReceive("deleteRegularOrder")->with($regularOrder, $anotherUser)->andReturn(null);
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, $privilege);
 
-        $result = (new RegularOrderDeletion($this->authentication, $privilegesManagement))->deleteRegularOrder($regularOrder, $this->user, $db);
+        $result = (new RegularOrderDeletion($this->authentication, $privilegesManagement))->deleteRegularOrder($regularOrder, $anotherUser, $this->user, $db);
         $this->assertNull($result);
     }
 }
