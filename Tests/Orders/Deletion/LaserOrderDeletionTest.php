@@ -57,16 +57,15 @@ class LaserOrderDeletionTest extends TestCase
 
         /** @var \TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder|\Mockery\MockInterface $laserOrder */
         $laserOrder = Mockery::mock(DSLaserOrder::class);
-        $laserOrder->shouldReceive("getUser")->andReturn($anotherUser);
         /** @var \TheClinicUseCases\Orders\Interfaces\IDataBaseDeleteLaserOrder|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseDeleteLaserOrder::class);
-        $db->shouldReceive("deleteLaserOrder")->with($laserOrder, $this->user)->andReturn(null);
+        $db->shouldReceive("deleteLaserOrder")->with($laserOrder, $anotherUser)->andReturn(null);
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, $privilege);
 
-        $result = (new LaserOrderDeletion($this->authentication, $privilegesManagement))->deleteLaserOrder($laserOrder, $this->user, $db);
+        $result = (new LaserOrderDeletion($this->authentication, $privilegesManagement))->deleteLaserOrder($laserOrder, $anotherUser, $this->user, $db);
         $this->assertNull($result);
     }
 }
