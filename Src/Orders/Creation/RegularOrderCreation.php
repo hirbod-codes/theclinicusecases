@@ -6,14 +6,15 @@ use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
 use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
-use TheClinicUseCases\Exceptions\Orders\AdminTemptsToCreateOrderForAdminException;
-use TheClinicUseCases\Exceptions\Orders\UserTemptsToCreateOrderForAdminException;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateDefaultRegularOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class RegularOrderCreation
 {
+    use TraitGetPrivilegeFromInput;
+
     private Authentication $authentication;
 
     private PrivilegesManagement $privilegesManagement;
@@ -33,14 +34,7 @@ class RegularOrderCreation
         DSAdmin $user,
         IDataBaseCreateRegularOrder $db,
     ): DSRegularOrder {
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfRegularOrderCreate";
-        } else {
-            if ($targetUser instanceof DSAdmin) {
-                throw new AdminTemptsToCreateOrderForAdminException();
-            }
-            $privilege = "regularOrderCreate";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfRegularOrderCreate", "regularOrderCreate");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
@@ -50,18 +44,7 @@ class RegularOrderCreation
 
     public function createDefaultRegularOrder(DSUser $targetUser, DSUser $user, IDataBaseCreateDefaultRegularOrder $db): DSRegularOrder
     {
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfRegularOrderCreate";
-        } else {
-            if ($targetUser instanceof DSAdmin) {
-                if ($user instanceof DSAdmin) {
-                    throw new AdminTemptsToCreateOrderForAdminException();
-                } else {
-                    throw new UserTemptsToCreateOrderForAdminException();
-                }
-            }
-            $privilege = "regularOrderCreate";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfRegularOrderCreate", "regularOrderCreate");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);

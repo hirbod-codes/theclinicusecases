@@ -16,10 +16,13 @@ use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateLaserOrder;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class LaserOrderCreation
 {
+    use TraitGetPrivilegeFromInput;
+
     private Authentication $authentication;
 
     private PrivilegesManagement $privilegesManagement;
@@ -47,11 +50,7 @@ class LaserOrderCreation
 
     public function createLaserOrder(DSUser $targetUser, DSUser $user, IDataBaseCreateLaserOrder $db, ?DSParts $parts = null, ?DSPackages $packages = null): DSLaserOrder
     {
-        if ($targetUser->getId() === $user->getId()) {
-            $privilege = "selfLaserOrderCreate";
-        } else {
-            $privilege = "laserOrderCreate";
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserOrderCreate", "laserOrderCreate");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
