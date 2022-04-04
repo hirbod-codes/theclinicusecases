@@ -5,6 +5,7 @@ namespace Tests\Accounts;
 use Faker\Factory;
 use Faker\Generator;
 use Mockery;
+use Mockery\MockInterface;
 use Tests\TestCase;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\AccountsManagement;
@@ -37,10 +38,12 @@ class AccountsManagementTest extends TestCase
         $this->authentication->shouldReceive("check")->with($this->user);
     }
 
-    private function makeUser(): DSUser
+    private function makeUser(): DSUser|MockInterface
     {
         /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
         $user = Mockery::mock(DSUser::class);
+        $user->shouldReceive('getId')->andReturn($this->faker->numberBetween(1, 1000));
+        $user->shouldReceive('getUsername')->andReturn($this->faker->userName());
         return $user;
     }
 
@@ -64,36 +67,31 @@ class AccountsManagementTest extends TestCase
 
     public function testGetAccount(): void
     {
-        $ruleName = 'admin';
-        $id = $this->faker->numberBetween(1, 1000);
+        $targetUser = $this->makeUser();
+        $targetUser->shouldReceive('getUsername')->andReturn($this->faker->userName());
+        $targetUserUsername = $targetUser->getUsername();
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveAccounts::class);
-        $db->shouldReceive("getAccount")->with($id, $ruleName)->andReturn($this->user);
+        $db->shouldReceive("getAccount")->with($targetUserUsername)->andReturn($targetUser);
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountRead");
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccount($id, $ruleName, $this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccount($targetUserUsername, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
-    }
-
-    public function testGetSelfAccount(): void
-    {
-        $ruleName = 'admin';
-        $id = $this->faker->numberBetween(1, 1000);
-        $this->user->shouldReceive("getId")->andReturn($id);
-
-        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
-        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountRead");
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseRetrieveAccounts::class);
-        $db->shouldReceive("getAccount")->with($this->user->getId(), $ruleName)->andReturn($this->user);
+        $db->shouldReceive("getAccount")->with($this->user->getUsername())->andReturn($this->user);
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getSelfAccount($ruleName,$this->user, $db);
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountRead");
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountRead");
+
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccount($this->user->getUsername(), $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
@@ -135,6 +133,7 @@ class AccountsManagementTest extends TestCase
     public function testDeleteAccount(): void
     {
         $targetUser = $this->makeUser();
+
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseDeleteAccount::class);
         $db->shouldReceive("deleteAccount")->with($targetUser);
@@ -145,10 +144,7 @@ class AccountsManagementTest extends TestCase
 
         $account = (new AccountsManagement($this->authentication, $privilegesManagement))->deleteAccount($targetUser, $this->user, $db);
         $this->assertNull($account);
-    }
 
-    public function testDeleteSelfAccount(): void
-    {
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseDeleteAccount::class);
         $db->shouldReceive("deleteAccount")->with($this->user);
@@ -157,14 +153,13 @@ class AccountsManagementTest extends TestCase
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountDelete");
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->deleteSelfAccount($this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->deleteAccount($this->user, $this->user, $db);
         $this->assertNull($account);
     }
 
-    public function testUpdateAccount(): void
+    public function testmassUpdateAccount(): void
     {
         $input = [];
-
         $targetUser = $this->makeUser();
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount|\Mockery\MockInterface $db */
@@ -175,14 +170,37 @@ class AccountsManagementTest extends TestCase
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountUpdate");
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->updateAccount($input, $targetUser, $this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->massUpdateAccount($input, $targetUser, $this->user, $db);
+        $this->assertInstanceOf(DSUser::class, $account);
+
+        /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseUpdateAccount::class);
+        $db->shouldReceive("massUpdateAccount")->with($input, $this->user)->andReturn($this->makeUser());
+
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountUpdate");
+
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->massUpdateAccount($input, $this->user, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 
-    public function testUpdateSelfAccount(): void
+    public function testupdateAccount(): void
     {
+        $targetUser = $this->makeUser();
         $attribute = $this->faker->lexify();
         $newValue = true;
+
+        /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount|\Mockery\MockInterface $db */
+        $db = Mockery::mock(IDataBaseUpdateAccount::class);
+        $db->shouldReceive("updateAccount")->with($attribute, $newValue, $targetUser)->andReturn($this->makeUser());
+
+        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
+        $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountUpdate");
+
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->updateAccount($attribute, $newValue, $targetUser, $this->user, $db);
+        $this->assertInstanceOf(DSUser::class, $account);
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseUpdateAccount::class);
@@ -190,10 +208,9 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountUpdate");
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountUpdate" . ucfirst($attribute));
 
-        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->updateSelfAccount($attribute, $newValue, $this->user, $db);
+        $account = (new AccountsManagement($this->authentication, $privilegesManagement))->updateAccount($attribute, $newValue, $this->user, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
     }
 }
