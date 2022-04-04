@@ -2,18 +2,18 @@
 
 namespace TheClinicUseCases\Accounts;
 
-use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseCreateAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseDeleteAccount;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseRetrieveAccounts;
 use TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount;
-use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToDeleteAdminException;
-use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToUpdateAdminException;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
+use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 
 class AccountsManagement
 {
+    use TraitGetPrivilegeFromInput;
+
     private Authentication $authentication;
 
     private PrivilegesManagement $privilegesManagement;
@@ -41,20 +41,17 @@ class AccountsManagement
         return $db->getAccounts($count, $ruleName, $lastAccountId);
     }
 
-    public function getAccount(int $accountId, string $ruleName, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
+    public function getAccount(string $targetUserUsername, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
     {
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, "accountRead");
 
-        return $db->getAccount($accountId, $ruleName);
-    }
+        $targetUser = $db->getAccount($targetUserUsername);
 
-    public function getSelfAccount(string $ruleName, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
-    {
-        $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "selfAccountRead");
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountRead", "accountRead");
+        $this->privilegesManagement->checkBool($user, $privilege);
 
-        return $db->getAccount($user->getId(), $ruleName);
+        return $targetUser;
     }
 
     public function createAccount(array $input, DSUser $user, IDataBaseCreateAccount $db): DSUser
@@ -76,42 +73,31 @@ class AccountsManagement
 
     public function deleteAccount(DSUser $targetUser, DSUser $user, IDataBaseDeleteAccount $db): void
     {
-        if ($user instanceof DSAdmin && $targetUser instanceof DSAdmin && $user->getId() !== $targetUser->getId()) {
-            throw new AdminTemptsToDeleteAdminException();
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountDelete", "accountDelete");
 
         $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "accountDelete");
+        $this->privilegesManagement->checkBool($user, $privilege);
 
         $db->deleteAccount($targetUser);
     }
 
-    public function deleteSelfAccount(DSUser $user, IDataBaseDeleteAccount $db): void
+    public function massUpdateAccount(array $input, DSUser $targetUser, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
-        $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "selfAccountDelete");
-
-        $db->deleteAccount($user);
-    }
-
-    public function updateAccount(array $input, DSUser $targetUser, DSUser $user, IDataBaseUpdateAccount $db): DSUser
-    {
-        if ($user instanceof DSAdmin && $targetUser instanceof DSAdmin && $user->getId() !== $targetUser->getId()) {
-            throw new AdminTemptsToUpdateAdminException();
-        }
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountUpdate", "accountUpdate");
 
         $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "accountUpdate");
+        $this->privilegesManagement->checkBool($user, $privilege);
 
         return $db->massUpdateAccount($input, $targetUser);
     }
 
-    public function updateSelfAccount(string $attribute, mixed $newValue, DSUser $user, IDataBaseUpdateAccount $db): DSUser
+    public function updateAccount(string $attribute, mixed $newValue, DSUser $targetUser, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
-        $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "selfAccountUpdate");
-        $this->privilegesManagement->checkBool($user, "selfAccountUpdate" . ucfirst($attribute));
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountUpdate" . ucfirst($attribute), "accountUpdate");
 
-        return $db->updateAccount($attribute, $newValue, $user);
+        $this->authentication->check($user);
+        $this->privilegesManagement->checkBool($user, $privilege);
+
+        return $db->updateAccount($attribute, $newValue, $targetUser);
     }
 }
