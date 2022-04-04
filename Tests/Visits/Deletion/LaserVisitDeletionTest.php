@@ -44,24 +44,18 @@ class LaserVisitDeletionTest extends TestCase
         $privilegeManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegeManagement->shouldReceive("checkBool")->with($user, $privilege);
 
-
         /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $targetUser */
         $targetUser = Mockery::mock(DSUser::class);
         $targetUser->shouldReceive("getId")->andReturn($targetUserId);
 
-        /** @var \TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
-        $dsLaserOrder = Mockery::mock(DSLaserOrder::class);
-        $dsLaserOrder->shouldReceive("getUser")->andReturn($targetUser);
-
         /** @var \TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit|\Mockery\MockInterface $dsLaserVisit */
         $dsLaserVisit = Mockery::mock(DSLaserVisit::class);
-        $dsLaserVisit->shouldReceive("getOrder")->andReturn($dsLaserOrder);
 
         /** @var \TheClinicUseCases\Visits\Interfaces\IDataBaseDeleteVisit|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseDeleteVisit::class);
-        $db->shouldReceive("deleteLaserVisit")->with($dsLaserVisit);
+        $db->shouldReceive("deleteLaserVisit")->with($dsLaserVisit, $targetUser);
 
-        $result = (new LaserVisitDeletion($authentication, $privilegeManagement))->delete($dsLaserVisit, $user, $db);
+        $result = (new LaserVisitDeletion($authentication, $privilegeManagement))->delete($dsLaserVisit, $targetUser, $user, $db);
         $this->assertNull($result);
     }
 }
