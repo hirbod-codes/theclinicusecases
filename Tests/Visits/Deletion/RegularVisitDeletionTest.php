@@ -59,9 +59,9 @@ class RegularVisitDeletionTest extends TestCase
 
         /** @var \TheClinicUseCases\Visits\Interfaces\IDataBaseDeleteVisit|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseDeleteVisit::class);
-        $db->shouldReceive("deleteRegularVisit")->with($dsRegularVisit);
+        $db->shouldReceive("deleteRegularVisit")->with($dsRegularVisit, $targetUser);
 
-        $result = (new RegularVisitDeletion($authentication, $privilegeManagement))->delete($dsRegularVisit, $user, $db);
+        $result = (new RegularVisitDeletion($authentication, $privilegeManagement))->delete($dsRegularVisit, $targetUser, $user, $db);
         $this->assertNull($result);
     }
 }
