@@ -53,7 +53,6 @@ class RegularVisitCreationTest extends TestCase
 
         /** @var \TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder|\Mockery\MockInterface $dsRegularOrder */
         $dsRegularOrder = Mockery::mock(DSRegularOrder::class);
-        $dsRegularOrder->shouldReceive("getUser")->andReturn($targetUser);
 
         /** @var \TheClinicDataStructures\DataStructures\Visit\Regular\DSRegularVisit|\Mockery\MockInterface $dsRegularVisit */
         $dsRegularVisit = Mockery::mock(DSRegularVisit::class);
@@ -64,9 +63,9 @@ class RegularVisitCreationTest extends TestCase
 
         /** @var \TheClinicUseCases\Visits\Interfaces\IDataBaseCreateVisit|\Mockery\MockInterface $db */
         $db = Mockery::mock(IDataBaseCreateVisit::class);
-        $db->shouldReceive("createRegularVisit")->with($dsRegularOrder, $timestamp)->andReturn($dsRegularVisit);
+        $db->shouldReceive("createRegularVisit")->with($dsRegularOrder, $targetUser, $timestamp)->andReturn($dsRegularVisit);
 
-        $createdVisit = (new RegularVisitCreation($authentication, $privilegeManagement, $iFindVisit))->create($dsRegularOrder, $user, $db);
+        $createdVisit = (new RegularVisitCreation($authentication, $privilegeManagement, $iFindVisit))->create($dsRegularOrder, $targetUser, $user, $db);
         $this->assertInstanceOf(DSRegularVisit::class, $createdVisit);
     }
 }
