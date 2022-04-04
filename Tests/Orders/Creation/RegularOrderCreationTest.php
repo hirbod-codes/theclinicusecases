@@ -8,12 +8,11 @@ use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
 use TheClinicDataStructures\DataStructures\User\DSUser;
-use TheClinic\Order\ICalculateRegularOrder;
 use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
 use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicUseCases\Accounts\Authentication;
-use TheClinicUseCases\Exceptions\Orders\AdminTemptsToCreateOrderForAdminException;
-use TheClinicUseCases\Exceptions\Orders\UserTemptsToCreateOrderForAdminException;
+use TheClinicUseCases\Exceptions\AdminsCollisionException;
+use TheClinicUseCases\Exceptions\AdminModificationByUserException;
 use TheClinicUseCases\Orders\Creation\RegularOrderCreation;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateDefaultRegularOrder;
 use TheClinicUseCases\Orders\Interfaces\IDataBaseCreateRegularOrder;
@@ -93,7 +92,7 @@ class RegularOrderCreationTest extends TestCase
             try {
                 (new RegularOrderCreation($authentication, $privilegesManagement))->createRegularOrder($price, $timeConsumption, $targetUser, $user, $db);
                 throw new \RuntimeException("Failure!!!", 1);
-            } catch (AdminTemptsToCreateOrderForAdminException $e) {
+            } catch (AdminsCollisionException $e) {
             }
         } else {
             $createdOrder = (new RegularOrderCreation($authentication, $privilegesManagement))->createRegularOrder($price, $timeConsumption, $targetUser, $user, $db);
@@ -201,6 +200,10 @@ class RegularOrderCreationTest extends TestCase
         DSUser $targetUser,
         int $targetUserId
     ): void {
+        if ($userId === $targetUserId && get_class($user) !== get_class($targetUser)) {
+            return;
+        }
+
         if ($userId === $targetUserId) {
             $createdOrder = (new RegularOrderCreation($this->authentication, $this->privilegesManagement))->createDefaultRegularOrder($targetUser, $user, $this->db);
             $this->assertInstanceOf(DSRegularOrder::class, $createdOrder);
@@ -212,13 +215,13 @@ class RegularOrderCreationTest extends TestCase
                 try {
                     (new RegularOrderCreation($this->authentication, $this->privilegesManagement))->createDefaultRegularOrder($targetUser, $user, $this->db);
                     throw new \RuntimeException("Failure!!!", 1);
-                } catch (AdminTemptsToCreateOrderForAdminException $e) {
+                } catch (AdminsCollisionException $e) {
                 }
             } else {
                 try {
                     (new RegularOrderCreation($this->authentication, $this->privilegesManagement))->createDefaultRegularOrder($targetUser, $user, $this->db);
                     throw new \RuntimeException("Failure!!!", 1);
-                } catch (UserTemptsToCreateOrderForAdminException $e) {
+                } catch (AdminModificationByUserException $e) {
                 }
             }
         } else {
