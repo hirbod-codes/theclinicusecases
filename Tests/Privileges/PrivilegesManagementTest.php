@@ -15,6 +15,7 @@ use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToSetAdminPrivilege;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
+use TheClinicUseCases\Privileges\Interfaces\IDataBaseCreateRole;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class PrivilegesManagementTest extends TestCase
@@ -104,6 +105,21 @@ class PrivilegesManagementTest extends TestCase
             $this->assertNotFalse(array_search($key, array_keys($privileges)));
             $this->assertEquals($privileges[$key], $value);
         }
+    }
+
+    public function testCreateRole(): void
+    {
+        $privilegeValue = ['privilege', 'value'];
+        $this->authentication->shouldReceive('check')->with($this->authenticated);
+
+        /** @var IDataBaseCreateRole|MockInterface $iDataBaseCreateRole */
+        $iDataBaseCreateRole = Mockery::mock(IDataBaseCreateRole::class);
+        $iDataBaseCreateRole
+            ->shouldReceive('createRole')
+            ->with('custom', $privilegeValue);
+
+        $result = $this->instantiate()->createRole($this->authenticated, 'custom', $privilegeValue, $iDataBaseCreateRole);
+        $this->assertNull($result);
     }
 
     public function testGetUserPrivileges(): void
