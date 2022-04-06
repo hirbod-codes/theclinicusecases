@@ -8,6 +8,7 @@ use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToSetAdminPrivilege;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
+use TheClinicUseCases\Privileges\Interfaces\IDataBaseCreateRole;
 
 class PrivilegesManagement
 {
@@ -53,6 +54,13 @@ class PrivilegesManagement
         }
 
         $targetUser->setPrivilege($privilege, $value);
+    }
+
+    public function createRole(DSAdmin $user, string $customRoleName, array $privilegeValue, IDataBaseCreateRole $iDataBaseCreateRole): void
+    {
+        $this->authentication->check($user);
+
+        $iDataBaseCreateRole->createRole($customRoleName, $privilegeValue);
     }
 
     /**
