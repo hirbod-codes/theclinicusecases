@@ -157,22 +157,24 @@ class PrivilegesManagementTest extends TestCase
 
     public function testSetUserPrivilege(): void
     {
+        $privilege = "selfAccountRead";
+
+        $this->authentication->shouldReceive('check')->with($this->authenticated);
+        /** @var DSUser|MockInterface $dsUser */
+        $dsUser = Mockery::mock(DSUser::class);
+        $dsUser->shouldReceive('setPrivilege')->with($privilege, false);
+
+        $instance = $this->instantiate();
+        $result = $instance->setUserPrivilege($this->authenticated, $dsUser, $privilege, false);
+
+        $this->assertNull($result);
+
         try {
-            $privilege = "selfAccountRead";
-
-            $this->authentication->shouldReceive('check')->with($this->authenticated);
-
-            $instance = $this->instantiate();
-            $result = $instance->setUserPrivilege($this->authenticated, $this->dsUser, $privilege, false);
-
-            $this->assertNull($result);
-            $this->assertEquals(false, $this->dsUser::getUserPrivileges()[$privilege]);
-
-            try {
-                $result = $instance->setUserPrivilege($this->authenticated, $this->makeAuthenticatable(true), $privilege, false);
-                throw new \RuntimeException('Failure!!!');
-            } catch (AdminTemptsToSetAdminPrivilege $th) {
-            }
+            $result = $instance->setUserPrivilege($this->authenticated, $this->makeAuthenticatable(true), $privilege, false);
+            throw new \RuntimeException('Failure!!!');
+        } catch (AdminTemptsToSetAdminPrivilege $th) {
+        }
+        try {
         } finally {
             $instance->setUserPrivilege($this->authenticated, $this->dsUser, $privilege, true);
         }
