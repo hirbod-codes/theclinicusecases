@@ -4,7 +4,6 @@ namespace TheClinicUseCases\Visits\Retrieval;
 
 use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
 use TheClinicDataStructures\DataStructures\User\DSUser;
-use TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit;
 use TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisits;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
@@ -61,30 +60,23 @@ class LaserVisitRetrieval
         return $db->getVisitsByOrder($dsTargetUser, $dsLaserOrder, $sortByTimestamp);
     }
 
-    public function getVisitsByTimestamp(DSUser $dsAuthenticated, DSUser $dsTargetUser, int $timestamp, string $sortByTimestamp, IDataBaseRetrieveLaserVisits $db): DSLaserVisits
+    public function getVisitsByTimestamp(DSUser $dsAuthenticated, string $operator, int $timestamp, string $sortByTimestamp, IDataBaseRetrieveLaserVisits $db): DSLaserVisits
     {
-        if (!in_array($sortByTimestamp, ['desc', 'asc'])) {
+        if (
+            !in_array($sortByTimestamp, ['desc', 'asc']) ||
+            !in_array($operator, ['<>', '=', '<=', '<', '>=', '>'])
+        ) {
             throw new \InvalidArgumentException(
                 '$sortByTimestamp variable must be one of the \'desc\' or \'asc\' values, \'' . $sortByTimestamp . '\' given.',
                 500
             );
         }
 
-        $privilege = $this->getPrivilegeFromInput($dsAuthenticated, $dsTargetUser, "selfLaserVisitRetrieve", "laserVisitRetrieve");
+        $privilege = "laserVisitRetrieve";
 
         $this->authentication->check($dsAuthenticated);
         $this->privilegesManagement->checkBool($dsAuthenticated, $privilege);
 
-        return $db->getVisitsByTimestamp($dsTargetUser, $timestamp, $sortByTimestamp);
-    }
-
-    public function getVisitByTimestamp(DSUser $dsAuthenticated, DSUser $dsTargetUser, int $timestamp, IDataBaseRetrieveLaserVisits $db): DSLaserVisit
-    {
-        $privilege = $this->getPrivilegeFromInput($dsAuthenticated, $dsTargetUser, "selfLaserVisitRetrieve", "laserVisitRetrieve");
-
-        $this->authentication->check($dsAuthenticated);
-        $this->privilegesManagement->checkBool($dsAuthenticated, $privilege);
-
-        return $db->getVisitByTimestamp($dsTargetUser, $timestamp);
+        return $db->getVisitsByTimestamp($operator, $timestamp, $sortByTimestamp);
     }
 }
