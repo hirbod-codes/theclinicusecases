@@ -186,27 +186,6 @@ class RegularVisitRetrievalTest extends TestCase
         $this->assertInstanceOf(DSRegularVisits::class, $visits);
     }
 
-    public function testGetVisitsByTimestampSelf(): void
-    {
-        $this->privilegesManagement
-            ->shouldReceive('checkBool')
-            ->with($this->authenticated, 'selfRegularVisitRetrieve')
-            // 
-        ;
-
-        $timestamp = $this->faker->numberBetween(500, 1000000);
-
-        $this->db
-            ->shouldReceive('getVisitsByTimestamp')
-            ->with($this->authenticated, $timestamp, 'desc')
-            ->andReturn(new DSRegularVisits)
-            // 
-        ;
-
-        $visits = $this->instantiate()->getVisitsByTimestamp($this->authenticated, $this->authenticated, $timestamp, 'desc', $this->db);
-        $this->assertInstanceOf(DSRegularVisits::class, $visits);
-    }
-
     public function testGetVisitsByTimestamp(): void
     {
         $this->privilegesManagement
@@ -215,62 +194,17 @@ class RegularVisitRetrievalTest extends TestCase
             // 
         ;
 
+        $operator = '>=';
         $timestamp = $this->faker->numberBetween(500, 1000000);
 
         $this->db
             ->shouldReceive('getVisitsByTimestamp')
-            ->with($this->dsUser, $timestamp, 'desc')
+            ->with($operator, $timestamp, 'desc')
             ->andReturn(new DSRegularVisits)
             // 
         ;
 
-        $visits = $this->instantiate()->getVisitsByTimestamp($this->authenticated, $this->dsUser, $timestamp, 'desc', $this->db);
+        $visits = $this->instantiate()->getVisitsByTimestamp($this->authenticated, $operator, $timestamp, 'desc', $this->db);
         $this->assertInstanceOf(DSRegularVisits::class, $visits);
-    }
-
-    public function testGetVisitByTimestampSelf(): void
-    {
-        $this->privilegesManagement
-            ->shouldReceive('checkBool')
-            ->with($this->authenticated, 'selfRegularVisitRetrieve')
-            // 
-        ;
-
-        $timestamp = $this->faker->numberBetween(500, 1000000);
-
-        $dsLaserVisit = Mockery::mock(DSRegularVisit::class);
-
-        $this->db
-            ->shouldReceive('getVisitByTimestamp')
-            ->with($this->authenticated, $timestamp)
-            ->andReturn($dsLaserVisit)
-            // 
-        ;
-
-        $visits = $this->instantiate()->getVisitByTimestamp($this->authenticated, $this->authenticated, $timestamp, $this->db);
-        $this->assertInstanceOf(DSRegularVisit::class, $visits);
-    }
-
-    public function testGetVisitByTimestamp(): void
-    {
-        $this->privilegesManagement
-            ->shouldReceive('checkBool')
-            ->with($this->authenticated, 'regularVisitRetrieve')
-            // 
-        ;
-
-        $timestamp = $this->faker->numberBetween(500, 1000000);
-
-        $dsLaserVisit = Mockery::mock(DSRegularVisit::class);
-
-        $this->db
-            ->shouldReceive('getVisitByTimestamp')
-            ->with($this->dsUser, $timestamp)
-            ->andReturn($dsLaserVisit)
-            // 
-        ;
-
-        $visits = $this->instantiate()->getVisitByTimestamp($this->authenticated, $this->dsUser, $timestamp, $this->db);
-        $this->assertInstanceOf(DSRegularVisit::class, $visits);
     }
 }

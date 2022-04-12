@@ -61,30 +61,23 @@ class RegularVisitRetrieval
         return $db->getVisitsByOrder($dsTargetUser, $dsRegularOrder, $sortByTimestamp);
     }
 
-    public function getVisitsByTimestamp(DSUser $dsAuthenticated, DSUser $dsTargetUser, int $timestamp, string $sortByTimestamp, IDataBaseRetrieveRegularVisits $db): DSRegularVisits
+    public function getVisitsByTimestamp(DSUser $dsAuthenticated, string $operator, int $timestamp, string $sortByTimestamp, IDataBaseRetrieveRegularVisits $db): DSRegularVisits
     {
-        if (!in_array($sortByTimestamp, ['desc', 'asc'])) {
+        if (
+            !in_array($sortByTimestamp, ['desc', 'asc']) ||
+            !in_array($operator, ['<>', '=', '<=', '<', '>=', '>'])
+        ) {
             throw new \InvalidArgumentException(
                 '$sortByTimestamp variable must be one of the \'desc\' or \'asc\' values, \'' . $sortByTimestamp . '\' given.',
                 500
             );
         }
 
-        $privilege = $this->getPrivilegeFromInput($dsAuthenticated, $dsTargetUser, "selfRegularVisitRetrieve", "regularVisitRetrieve");
+        $privilege = "regularVisitRetrieve";
 
         $this->authentication->check($dsAuthenticated);
         $this->privilegesManagement->checkBool($dsAuthenticated, $privilege);
 
-        return $db->getVisitsByTimestamp($dsTargetUser, $timestamp, $sortByTimestamp);
-    }
-
-    public function getVisitByTimestamp(DSUser $dsAuthenticated, DSUser $dsTargetUser, int $timestamp, IDataBaseRetrieveRegularVisits $db): DSRegularVisit
-    {
-        $privilege = $this->getPrivilegeFromInput($dsAuthenticated, $dsTargetUser, "selfRegularVisitRetrieve", "regularVisitRetrieve");
-
-        $this->authentication->check($dsAuthenticated);
-        $this->privilegesManagement->checkBool($dsAuthenticated, $privilege);
-
-        return $db->getVisitByTimestamp($dsTargetUser, $timestamp);
+        return $db->getVisitsByTimestamp($operator, $timestamp, $sortByTimestamp);
     }
 }
