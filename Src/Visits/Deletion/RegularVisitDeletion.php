@@ -7,7 +7,7 @@ use TheClinicDataStructures\DataStructures\Visit\Regular\DSRegularVisit;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
-use TheClinicUseCases\Visits\Interfaces\IDataBaseDeleteVisit;
+use TheClinicUseCases\Visits\Interfaces\IDataBaseDeleteRegularVisit;
 
 class RegularVisitDeletion
 {
@@ -18,14 +18,14 @@ class RegularVisitDeletion
     private PrivilegesManagement $privilegesManagement;
 
     public function __construct(
-        Authentication $authentication,
-        PrivilegesManagement $privilegesManagement
+        null|Authentication $authentication = null,
+        null|PrivilegesManagement $privilegesManagement = null
     ) {
-        $this->authentication = $authentication;
-        $this->privilegesManagement = $privilegesManagement;
+        $this->authentication = $authentication ?: new Authentication;
+        $this->privilegesManagement = $privilegesManagement ?: new PrivilegesManagement;
     }
 
-    public function delete(DSRegularVisit $dsRegularVisit, DSUser $targetUser, DSUser $user, IDataBaseDeleteVisit $db): void
+    public function delete(DSRegularVisit $dsRegularVisit, DSUser $targetUser, DSUser $user, IDataBaseDeleteRegularVisit $db): void
     {
         $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfRegularVisitDelete", "regularVisitDelete");
 
