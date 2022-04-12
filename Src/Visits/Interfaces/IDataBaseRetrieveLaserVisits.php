@@ -13,7 +13,5 @@ interface IDataBaseRetrieveLaserVisits extends IDataBaseRetrieveVisits
 
     public function getVisitsByOrder(DSUser $dsTargetUser, DSLaserOrder $dsLaserOrder, string $sortByTimestamp): DSLaserVisits;
 
-    public function getVisitsByTimestamp(DSUser $dsTargetUser, int $timestamp, string $sortByTimestamp): DSLaserVisits;
-
-    public function getVisitByTimestamp(DSUser $dsTargetUser, int $timestamp): DSLaserVisit;
+    public function getVisitsByTimestamp(string $operator, int $timestamp, string $sortByTimestamp): DSLaserVisits;
 }
