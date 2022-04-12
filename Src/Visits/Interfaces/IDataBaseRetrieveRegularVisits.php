@@ -13,7 +13,5 @@ interface IDataBaseRetrieveRegularVisits extends IDataBaseRetrieveVisits
 
     public function getVisitsByOrder(DSUser $dsTargetUser, DSRegularOrder $dsRegularOrder, string $sortByTimestamp): DSRegularVisits;
 
-    public function getVisitsByTimestamp(DSUser $dsTargetUser, int $timestamp, string $sortByTimestamp): DSRegularVisits;
-
-    public function getVisitByTimestamp(DSUser $dsTargetUser, int $timestamp): DSRegularVisit;
+    public function getVisitsByTimestamp(string $operator, int $timestamp, string $sortByTimestamp): DSRegularVisits;
 }
