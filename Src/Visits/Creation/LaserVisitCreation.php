@@ -4,12 +4,13 @@ namespace TheClinicUseCases\Visits\Creation;
 
 use TheClinic\Visit\IFindVisit;
 use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
+use TheClinicDataStructures\DataStructures\Time\DSWeekDaysPeriods;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Traits\TraitGetPrivilegeFromInput;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
-use TheClinicUseCases\Visits\Interfaces\IDataBaseCreateVisit;
+use TheClinicUseCases\Visits\Interfaces\IDataBaseCreateLaserVisit;
 
 class LaserVisitCreation
 {
@@ -22,9 +23,9 @@ class LaserVisitCreation
     private IFindVisit $iFindVisit;
 
     public function __construct(
-        Authentication $authentication = null,
-        PrivilegesManagement $privilegesManagement = null,
-        IFindVisit $iFindVisit
+        IFindVisit $iFindVisit,
+        null|Authentication $authentication = null,
+        null|PrivilegesManagement $privilegesManagement = null
     ) {
         $this->authentication = $authentication ?: new Authentication;
         $this->privilegesManagement = $privilegesManagement ?: new PrivilegesManagement;
@@ -32,13 +33,13 @@ class LaserVisitCreation
         $this->iFindVisit = $iFindVisit;
     }
 
-    public function create(DSLaserOrder $dsLaserOrder, DSUser $targetUser, DSUser $user, IDataBaseCreateVisit $db): DSLaserVisit
+    public function create(DSLaserOrder $dsLaserOrder, DSUser $targetUser, DSUser $user, IDataBaseCreateLaserVisit $db): DSLaserVisit
     {
         $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserVisitCreate", "laserVisitCreate");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        return $db->createLaserVisit($dsLaserOrder, $targetUser, $this->iFindVisit->findVisit());
+        return $db->createLaserVisit($dsLaserOrder, $targetUser, $this->iFindVisit);
     }
 }

@@ -5,15 +5,19 @@ namespace Tests\visits\Creation;
 use Faker\Factory;
 use Faker\Generator;
 use Mockery;
+use Mockery\MockInterface;
 use Tests\TestCase;
 use TheClinic\Visit\IFindVisit;
 use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
+use TheClinicDataStructures\DataStructures\User\DSAdmin;
+use TheClinicDataStructures\DataStructures\User\DSPatient;
 use TheClinicDataStructures\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
 use TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 use TheClinicUseCases\Visits\Creation\LaserVisitCreation;
-use TheClinicUseCases\Visits\Interfaces\IDataBaseCreateVisit;
+use TheClinicUseCases\Visits\Interfaces\IDataBaseCreateLaserVisit;
 
 class LaserVisitCreationTest extends TestCase
 {
@@ -28,44 +32,85 @@ class LaserVisitCreationTest extends TestCase
 
     public function testCreate(): void
     {
-        $this->createTester(14, 14, "selfLaserVisitCreate");
-        $this->createTester(14, 15, "laserVisitCreate");
+        $user = $this->makeAuthenticatable(true);
+
+        $targetUser = $this->makeAuthenticatable();
+
+        $this->createTester($user, $user, "selfLaserVisitCreate");
+        $this->createTester($user, $targetUser, "laserVisitCreate");
     }
 
-    public function createTester(int $userId, int $targetUserId, string $privilege): void
+    public function createTester(DSUser $user, DSUser $targetUser, string $privilege): void
     {
         $timestamp = $this->faker->numerify("#########");
 
-        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $user */
-        $user = Mockery::mock(DSUser::class);
-        $user->shouldReceive("getId")->andReturn($userId);
-
-        /** @var \TheClinicDataStructures\DataStructures\User\DSUser|\Mockery\MockInterface $targetUser */
-        $targetUser = Mockery::mock(DSUser::class);
-        $targetUser->shouldReceive("getId")->andReturn($targetUserId);
-
-        /** @var \TheClinicUseCases\Accounts\Authentication|\Mockery\MockInterface $authentication */
+        /** @var Authentication|MockInterface $authentication */
         $authentication = Mockery::mock(Authentication::class);
         $authentication->shouldReceive("check")->with($user);
-        /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegeManagement */
+        /** @var PrivilegesManagement|MockInterface $privilegeManagement */
         $privilegeManagement = Mockery::mock(PrivilegesManagement::class);
         $privilegeManagement->shouldReceive("checkBool")->with($user, $privilege);
 
-        /** @var \TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder|\Mockery\MockInterface $dsLaserOrder */
+        /** @var DSLaserOrder|MockInterface $dsLaserOrder */
         $dsLaserOrder = Mockery::mock(DSLaserOrder::class);
 
-        /** @var \TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit|\Mockery\MockInterface $dsLaserVisit */
+        /** @var DSLaserVisit|MockInterface $dsLaserVisit */
         $dsLaserVisit = Mockery::mock(DSLaserVisit::class);
 
-        /** @var \TheClinic\Visit\IFindVisit|\Mockery\MockInterface $iFindVisit */
+        /** @var IFindVisit|MockInterface $iFindVisit */
         $iFindVisit = Mockery::mock(IFindVisit::class);
-        $iFindVisit->shouldReceive("findVisit")->andReturn($timestamp);
 
-        /** @var \TheClinicUseCases\Visits\Interfaces\IDataBaseCreateVisit|\Mockery\MockInterface $db */
-        $db = Mockery::mock(IDataBaseCreateVisit::class);
-        $db->shouldReceive("createLaserVisit")->with($dsLaserOrder, $targetUser, $timestamp)->andReturn($dsLaserVisit);
+        /** @var IDataBaseCreateLaserVisit|MockInterface $db */
+        $db = Mockery::mock(IDataBaseCreateLaserVisit::class);
+        $db
+            ->shouldReceive("createLaserVisit")
+            ->with($dsLaserOrder, $targetUser, $iFindVisit)
+            ->andReturn($dsLaserVisit);
 
-        $createdVisit = (new LaserVisitCreation($authentication, $privilegeManagement, $iFindVisit))->create($dsLaserOrder, $targetUser, $user, $db);
+        $createdVisit = (new LaserVisitCreation($iFindVisit, $authentication, $privilegeManagement))
+            ->create($dsLaserOrder, $targetUser, $user, $db);
         $this->assertInstanceOf(DSLaserVisit::class, $createdVisit);
+    }
+
+    private function makeAuthenticatable($admin = false): DSUser
+    {
+        /** @var ICheckAuthentication|MockInterface $icheckAuthentication */
+        $icheckAuthentication = Mockery::mock(ICheckAuthentication::class);
+
+        if ($admin === true) {
+            return new DSAdmin(
+                $icheckAuthentication,
+                $this->faker->numberBetween(1, 100),
+                $this->faker->firstName(),
+                $this->faker->lastNAme(),
+                $this->faker->userName(),
+                $this->faker->randomElement(['Male', 'Female']),
+                $this->faker->phoneNumber(),
+                new \DateTime,
+                new \DateTime,
+                new \DateTime,
+                $this->faker->safeEmail(),
+                new \DateTime,
+                null,
+                null
+            );
+        } else {
+            return new DSPatient(
+                $icheckAuthentication,
+                $this->faker->numberBetween(1, 100),
+                $this->faker->firstName(),
+                $this->faker->lastNAme(),
+                $this->faker->userName(),
+                $this->faker->randomElement(['Male', 'Female']),
+                $this->faker->phoneNumber(),
+                new \DateTime,
+                new \DateTime,
+                new \DateTime,
+                $this->faker->safeEmail(),
+                new \DateTime,
+                null,
+                null
+            );
+        }
     }
 }
