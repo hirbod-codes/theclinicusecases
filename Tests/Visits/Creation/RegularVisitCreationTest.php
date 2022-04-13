@@ -67,8 +67,8 @@ class RegularVisitCreationTest extends TestCase
             ->with($dsRegularOrder, $targetUser, $iFindVisit)
             ->andReturn($dsRegularVisit);
 
-        $createdVisit = (new RegularVisitCreation($iFindVisit, $authentication, $privilegeManagement))
-            ->create($dsRegularOrder, $targetUser, $user, $db);
+        $createdVisit = (new RegularVisitCreation($authentication, $privilegeManagement))
+            ->create($dsRegularOrder, $targetUser, $user, $db, $iFindVisit);
         $this->assertInstanceOf(DSRegularVisit::class, $createdVisit);
     }
 
