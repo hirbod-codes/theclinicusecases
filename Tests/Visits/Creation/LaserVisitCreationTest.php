@@ -67,8 +67,8 @@ class LaserVisitCreationTest extends TestCase
             ->with($dsLaserOrder, $targetUser, $iFindVisit)
             ->andReturn($dsLaserVisit);
 
-        $createdVisit = (new LaserVisitCreation($iFindVisit, $authentication, $privilegeManagement))
-            ->create($dsLaserOrder, $targetUser, $user, $db);
+        $createdVisit = (new LaserVisitCreation($authentication, $privilegeManagement))
+            ->create($dsLaserOrder, $targetUser, $user, $db, $iFindVisit);
         $this->assertInstanceOf(DSLaserVisit::class, $createdVisit);
     }
 
