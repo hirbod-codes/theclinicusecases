@@ -20,26 +20,21 @@ class LaserVisitCreation
 
     private PrivilegesManagement $privilegesManagement;
 
-    private IFindVisit $iFindVisit;
-
     public function __construct(
-        IFindVisit $iFindVisit,
         null|Authentication $authentication = null,
         null|PrivilegesManagement $privilegesManagement = null
     ) {
         $this->authentication = $authentication ?: new Authentication;
         $this->privilegesManagement = $privilegesManagement ?: new PrivilegesManagement;
-
-        $this->iFindVisit = $iFindVisit;
     }
 
-    public function create(DSLaserOrder $dsLaserOrder, DSUser $targetUser, DSUser $user, IDataBaseCreateLaserVisit $db): DSLaserVisit
+    public function create(DSLaserOrder $dsLaserOrder, DSUser $targetUser, DSUser $user, IDataBaseCreateLaserVisit $db, IFindVisit $iFindVisit): DSLaserVisit
     {
         $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfLaserVisitCreate", "laserVisitCreate");
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
 
-        return $db->createLaserVisit($dsLaserOrder, $targetUser, $this->iFindVisit);
+        return $db->createLaserVisit($dsLaserOrder, $targetUser, $iFindVisit);
     }
 }
