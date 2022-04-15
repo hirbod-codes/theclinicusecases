@@ -159,7 +159,8 @@ class AccountsManagementTest extends TestCase
 
     public function testmassUpdateAccount(): void
     {
-        $input = [];
+        $attribute = 'firstname';
+        $input = [$attribute => 'value'];
         $targetUser = $this->makeUser();
 
         /** @var \TheClinicUseCases\Accounts\Interfaces\IDataBaseUpdateAccount|\Mockery\MockInterface $db */
@@ -168,7 +169,7 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountUpdate");
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountUpdate" . ucfirst($attribute));
 
         $account = (new AccountsManagement($this->authentication, $privilegesManagement))->massUpdateAccount($input, $targetUser, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
@@ -179,7 +180,7 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountUpdate");
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountUpdate" . ucfirst($attribute));
 
         $account = (new AccountsManagement($this->authentication, $privilegesManagement))->massUpdateAccount($input, $this->user, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);
@@ -197,7 +198,7 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountUpdate");
+        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountUpdate" . ucfirst($attribute));
 
         $account = (new AccountsManagement($this->authentication, $privilegesManagement))->updateAccount($attribute, $newValue, $targetUser, $this->user, $db);
         $this->assertInstanceOf(DSUser::class, $account);

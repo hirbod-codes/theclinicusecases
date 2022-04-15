@@ -83,17 +83,28 @@ class AccountsManagement
 
     public function massUpdateAccount(array $input, DSUser $targetUser, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
-        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountUpdate", "accountUpdate");
-
         $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, $privilege);
+
+        if (count($input) === 0) {
+            throw new \InvalidArgumentException('$input is empty', 500);
+        }
+
+        foreach ($input as $attribute => $value) {
+            if (!is_string($attribute)) {
+                throw new \InvalidArgumentException('One of the attributes names in $input array is not a string', 500);
+            }
+
+            $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountUpdate" . ucfirst($attribute), "accountUpdate" . ucfirst($attribute));
+
+            $this->privilegesManagement->checkBool($user, $privilege);
+        }
 
         return $db->massUpdateAccount($input, $targetUser);
     }
 
     public function updateAccount(string $attribute, mixed $newValue, DSUser $targetUser, DSUser $user, IDataBaseUpdateAccount $db): DSUser
     {
-        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountUpdate" . ucfirst($attribute), "accountUpdate");
+        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountUpdate" . ucfirst($attribute), "accountUpdate" . ucfirst($attribute));
 
         $this->authentication->check($user);
         $this->privilegesManagement->checkBool($user, $privilege);
