@@ -4,11 +4,13 @@ namespace TheClinicUseCases\Privileges;
 
 use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSUser;
+use TheClinicDataStructures\DataStructures\User\Interfaces\IPrivilege;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToSetAdminPrivilege;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Privileges\Interfaces\IDataBaseCreateRole;
+use TheClinicUseCases\Privileges\Interfaces\IDataBaseDeleteRole;
 
 class PrivilegesManagement
 {
@@ -45,7 +47,7 @@ class PrivilegesManagement
         return $user::getUserPrivileges();
     }
 
-    public function setUserPrivilege(DSAdmin $user, DSUser $targetUser, string $privilege, mixed $value): void
+    public function setUserPrivilege(DSAdmin $user, DSUser $targetUser, string $privilege, mixed $value, IPrivilege $ip): void
     {
         $this->authentication->check($user);
 
@@ -53,7 +55,7 @@ class PrivilegesManagement
             throw new AdminTemptsToSetAdminPrivilege();
         }
 
-        $targetUser->setPrivilege($privilege, $value);
+        $targetUser->setPrivilege($privilege, $value, $ip);
     }
 
     public function createRole(DSAdmin $user, string $customRoleName, array $privilegeValue, IDataBaseCreateRole $iDataBaseCreateRole): void
@@ -61,6 +63,17 @@ class PrivilegesManagement
         $this->authentication->check($user);
 
         $iDataBaseCreateRole->createRole($customRoleName, $privilegeValue);
+    }
+
+    public function deleteRole(DSAdmin $user, string $customRoleName, IDataBaseDeleteRole $iDataBaseDeleteRole): void
+    {
+        if (in_array($customRoleName, DSUser::$roles)) {
+            throw new \InvalidArgumentException('Ypu can not delete this role, this is a business role.', 403);
+        }
+
+        $this->authentication->check($user);
+
+        $iDataBaseDeleteRole->deleteRole($customRoleName);
     }
 
     /**

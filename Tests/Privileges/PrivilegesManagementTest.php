@@ -11,11 +11,13 @@ use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSPatient;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
+use TheClinicDataStructures\DataStructures\User\Interfaces\IPrivilege;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToSetAdminPrivilege;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Privileges\Interfaces\IDataBaseCreateRole;
+use TheClinicUseCases\Privileges\Interfaces\IDataBaseDeleteRole;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class PrivilegesManagementTest extends TestCase
@@ -122,6 +124,20 @@ class PrivilegesManagementTest extends TestCase
         $this->assertNull($result);
     }
 
+    public function testDeleteRole(): void
+    {
+        $this->authentication->shouldReceive('check')->with($this->authenticated);
+
+        /** @var IDataBaseDeleteRole|MockInterface $iDataBaseDeleteRole */
+        $iDataBaseDeleteRole = Mockery::mock(IDataBaseDeleteRole::class);
+        $iDataBaseDeleteRole
+            ->shouldReceive('deleteRole')
+            ->with('custom');
+
+        $result = $this->instantiate()->deleteRole($this->authenticated, 'custom', $iDataBaseDeleteRole);
+        $this->assertNull($result);
+    }
+
     public function testGetUserPrivileges(): void
     {
         $this->authentication->shouldReceive('check')->with($this->authenticated);
@@ -159,24 +175,24 @@ class PrivilegesManagementTest extends TestCase
     {
         $privilege = "selfAccountRead";
 
+        /** @var IPrivilege|MockInterface $ip */
+        $ip = Mockery::mock(IPrivilege::class);
+
         $this->authentication->shouldReceive('check')->with($this->authenticated);
+
         /** @var DSUser|MockInterface $dsUser */
         $dsUser = Mockery::mock(DSUser::class);
-        $dsUser->shouldReceive('setPrivilege')->with($privilege, false);
+        $dsUser->shouldReceive('setPrivilege')->with($privilege, false, $ip);
 
         $instance = $this->instantiate();
-        $result = $instance->setUserPrivilege($this->authenticated, $dsUser, $privilege, false);
+        $result = $instance->setUserPrivilege($this->authenticated, $dsUser, $privilege, false, $ip);
 
         $this->assertNull($result);
 
         try {
-            $result = $instance->setUserPrivilege($this->authenticated, $this->makeAuthenticatable(true), $privilege, false);
+            $result = $instance->setUserPrivilege($this->authenticated, $this->makeAuthenticatable(true), $privilege, false, $ip);
             throw new \RuntimeException('Failure!!!');
         } catch (AdminTemptsToSetAdminPrivilege $th) {
-        }
-        try {
-        } finally {
-            $instance->setUserPrivilege($this->authenticated, $this->dsUser, $privilege, true);
         }
     }
 
