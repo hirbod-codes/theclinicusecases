@@ -7,12 +7,10 @@ use Faker\Generator;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use Tests\Traits\MakeAuthenticatable;
 use TheClinic\Visit\IFindVisit;
 use TheClinicDataStructures\DataStructures\Order\Laser\DSLaserOrder;
-use TheClinicDataStructures\DataStructures\User\DSAdmin;
-use TheClinicDataStructures\DataStructures\User\DSPatient;
 use TheClinicDataStructures\DataStructures\User\DSUser;
-use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
 use TheClinicDataStructures\DataStructures\Visit\Laser\DSLaserVisit;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
@@ -21,6 +19,8 @@ use TheClinicUseCases\Visits\Interfaces\IDataBaseCreateLaserVisit;
 
 class LaserVisitCreationTest extends TestCase
 {
+    use MakeAuthenticatable;
+
     private Generator $faker;
 
     protected function setUp(): void
@@ -70,47 +70,5 @@ class LaserVisitCreationTest extends TestCase
         $createdVisit = (new LaserVisitCreation($authentication, $privilegeManagement))
             ->create($dsLaserOrder, $targetUser, $user, $db, $iFindVisit);
         $this->assertInstanceOf(DSLaserVisit::class, $createdVisit);
-    }
-
-    private function makeAuthenticatable($admin = false): DSUser
-    {
-        /** @var ICheckAuthentication|MockInterface $icheckAuthentication */
-        $icheckAuthentication = Mockery::mock(ICheckAuthentication::class);
-
-        if ($admin === true) {
-            return new DSAdmin(
-                $icheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        } else {
-            return new DSPatient(
-                $icheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        }
     }
 }

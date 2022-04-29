@@ -7,6 +7,7 @@ use Faker\Generator;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use Tests\Traits\MakeAuthenticatable;
 use TheClinic\Visit\IFindVisit;
 use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
 use TheClinicDataStructures\DataStructures\User\DSAdmin;
@@ -21,6 +22,8 @@ use TheClinicUseCases\Visits\Interfaces\IDataBaseCreateRegularVisit;
 
 class RegularVisitCreationTest extends TestCase
 {
+    use MakeAuthenticatable;
+
     private Generator $faker;
 
     protected function setUp(): void
@@ -70,47 +73,5 @@ class RegularVisitCreationTest extends TestCase
         $createdVisit = (new RegularVisitCreation($authentication, $privilegeManagement))
             ->create($dsRegularOrder, $targetUser, $user, $db, $iFindVisit);
         $this->assertInstanceOf(DSRegularVisit::class, $createdVisit);
-    }
-
-    private function makeAuthenticatable($admin = false): DSUser
-    {
-        /** @var ICheckAuthentication|MockInterface $icheckAuthentication */
-        $icheckAuthentication = Mockery::mock(ICheckAuthentication::class);
-
-        if ($admin === true) {
-            return new DSAdmin(
-                $icheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        } else {
-            return new DSPatient(
-                $icheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        }
     }
 }

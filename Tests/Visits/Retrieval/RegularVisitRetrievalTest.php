@@ -7,12 +7,9 @@ use Faker\Generator;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use Tests\Traits\MakeAuthenticatable;
 use TheClinicDataStructures\DataStructures\Order\Regular\DSRegularOrder;
-use TheClinicDataStructures\DataStructures\User\DSAdmin;
-use TheClinicDataStructures\DataStructures\User\DSPatient;
 use TheClinicDataStructures\DataStructures\User\DSUser;
-use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
-use TheClinicDataStructures\DataStructures\Visit\Regular\DSRegularVisit;
 use TheClinicDataStructures\DataStructures\Visit\Regular\DSRegularVisits;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
@@ -21,6 +18,8 @@ use TheClinicUseCases\Visits\Retrieval\RegularVisitRetrieval;
 
 class RegularVisitRetrievalTest extends TestCase
 {
+    use MakeAuthenticatable;
+
     private Generator $faker;
 
     private MockInterface|Authentication $authentication;
@@ -55,48 +54,6 @@ class RegularVisitRetrievalTest extends TestCase
 
         /** @var IDataBaseRetrieveRegularVisits|\Mockery\MockInterface $db */
         $this->db = Mockery::mock(IDataBaseRetrieveRegularVisits::class);
-    }
-
-    private function makeAuthenticatable($admin = false): DSUser
-    {
-        /** @var ICheckAuthentication|\Mockery\MockInterface $icheckAuthentication */
-        $icheckAuthentication = Mockery::mock(ICheckAuthentication::class);
-
-        if ($admin === true) {
-            return new DSAdmin(
-                $icheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        } else {
-            return new DSPatient(
-                $icheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        }
     }
 
     private function instantiate(): RegularVisitRetrieval

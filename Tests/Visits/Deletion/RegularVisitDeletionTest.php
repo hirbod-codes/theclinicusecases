@@ -7,10 +7,8 @@ use Faker\Generator;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
-use TheClinicDataStructures\DataStructures\User\DSAdmin;
-use TheClinicDataStructures\DataStructures\User\DSPatient;
+use Tests\Traits\MakeAuthenticatable;
 use TheClinicDataStructures\DataStructures\User\DSUser;
-use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
 use TheClinicDataStructures\DataStructures\Visit\Regular\DSRegularVisit;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
@@ -19,6 +17,8 @@ use TheClinicUseCases\Visits\Interfaces\IDataBaseDeleteRegularVisit;
 
 class RegularVisitDeletionTest extends TestCase
 {
+    use MakeAuthenticatable;
+
     private Generator $faker;
 
     protected function setUp(): void
@@ -57,47 +57,5 @@ class RegularVisitDeletionTest extends TestCase
 
         $result = (new RegularVisitDeletion($authentication, $privilegeManagement))->delete($dsRegularVisit, $targetUser, $user, $db);
         $this->assertNull($result);
-    }
-
-    private function makeAuthenticatable($admin = false): DSUser
-    {
-        /** @var ICheckAuthentication|MockInterface $iCheckAuthentication */
-        $iCheckAuthentication = Mockery::mock(ICheckAuthentication::class);
-
-        if ($admin === true) {
-            return new DSAdmin(
-                $iCheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        } else {
-            return new DSPatient(
-                $iCheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        }
     }
 }

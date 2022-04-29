@@ -7,10 +7,8 @@ use Faker\Generator;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
-use TheClinicDataStructures\DataStructures\User\DSAdmin;
-use TheClinicDataStructures\DataStructures\User\DSPatient;
+use Tests\Traits\MakeAuthenticatable;
 use TheClinicDataStructures\DataStructures\User\DSUser;
-use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
 use TheClinicDataStructures\DataStructures\User\Interfaces\IPrivilege;
 use TheClinicUseCases\Accounts\Authentication;
 use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToSetAdminPrivilege;
@@ -22,6 +20,8 @@ use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class PrivilegesManagementTest extends TestCase
 {
+    use MakeAuthenticatable;
+
     private Generator $faker;
 
     private DSUser|MockInterface $user;
@@ -46,48 +46,6 @@ class PrivilegesManagementTest extends TestCase
 
         /** @var Authentication|\Mockery\MockInterface $authentication */
         $this->authentication = Mockery::mock(Authentication::class);
-    }
-
-    private function makeAuthenticatable($admin = false): DSUser
-    {
-        /** @var IcheckAuthentication|\Mockery\MockInterface $icheckAuthentication */
-        $icheckAuthentication = Mockery::mock(ICheckAuthentication::class);
-
-        if ($admin === true) {
-            return new DSAdmin(
-                $icheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        } else {
-            return new DSPatient(
-                $icheckAuthentication,
-                $this->faker->numberBetween(1, 100),
-                $this->faker->firstName(),
-                $this->faker->lastNAme(),
-                $this->faker->userName(),
-                $this->faker->randomElement(['Male', 'Female']),
-                $this->faker->phoneNumber(),
-                new \DateTime,
-                new \DateTime,
-                new \DateTime,
-                $this->faker->safeEmail(),
-                new \DateTime,
-                null,
-                null
-            );
-        }
     }
 
     private function instantiate(): PrivilegesManagement
