@@ -51,7 +51,7 @@ class PrivilegesManagement
     {
         $this->authentication->check($user);
 
-        if ($targetUser instanceof DSAdmin) {
+        if ($targetUser instanceof DSAdmin && $targetUser->getUsername() !== $user->getUsername()) {
             throw new AdminTemptsToSetAdminPrivilege();
         }
 
