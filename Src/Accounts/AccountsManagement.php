@@ -44,12 +44,15 @@ class AccountsManagement
     public function getAccount(string $targetUserUsername, DSUser $user, IDataBaseRetrieveAccounts $db): DSUser
     {
         $this->authentication->check($user);
-        $this->privilegesManagement->checkBool($user, "accountRead");
+
+        if ($user->getUsername() !== $targetUserUsername) {
+            $this->privilegesManagement->checkBool($user, "accountRead");
+        } else {
+            $privilege = $this->getPrivilegeFromInput($user, $user, "selfAccountRead", "accountRead");
+            $this->privilegesManagement->checkBool($user, $privilege);
+        }
 
         $targetUser = $db->getAccount($targetUserUsername);
-
-        $privilege = $this->getPrivilegeFromInput($user, $targetUser, "selfAccountRead", "accountRead");
-        $this->privilegesManagement->checkBool($user, $privilege);
 
         return $targetUser;
     }

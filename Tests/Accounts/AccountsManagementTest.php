@@ -88,7 +88,6 @@ class AccountsManagementTest extends TestCase
 
         /** @var \TheClinicUseCases\Privileges\PrivilegesManagement|\Mockery\MockInterface $privilegesManagement */
         $privilegesManagement = Mockery::mock(PrivilegesManagement::class);
-        $privilegesManagement->shouldReceive("checkBool")->with($this->user, "accountRead");
         $privilegesManagement->shouldReceive("checkBool")->with($this->user, "selfAccountRead");
 
         $account = (new AccountsManagement($this->authentication, $privilegesManagement))->getAccount($this->user->getUsername(), $this->user, $db);
