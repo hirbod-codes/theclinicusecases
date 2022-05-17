@@ -76,9 +76,9 @@ class PrivilegesManagementTest extends TestCase
         $iDataBaseCreateRole = Mockery::mock(IDataBaseCreateRole::class);
         $iDataBaseCreateRole
             ->shouldReceive('createRole')
-            ->with('custom', $privilegeValue);
+            ->with('dummyRoleName', $privilegeValue, 'custom');
 
-        $result = $this->instantiate()->createRole($this->authenticated, 'custom', $privilegeValue, $iDataBaseCreateRole);
+        $result = $this->instantiate()->createRole($this->authenticated, 'dummyRoleName', $privilegeValue, 'custom', $iDataBaseCreateRole);
         $this->assertNull($result);
     }
 

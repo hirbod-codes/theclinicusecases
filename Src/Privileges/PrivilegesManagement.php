@@ -58,11 +58,11 @@ class PrivilegesManagement
         $targetUser->setPrivilege($privilege, $value, $ip);
     }
 
-    public function createRole(DSAdmin $user, string $customRoleName, array $privilegeValue, IDataBaseCreateRole $iDataBaseCreateRole): void
+    public function createRole(DSAdmin $user, string $customRoleName, array $privilegeValue, string $relatedRole, IDataBaseCreateRole $iDataBaseCreateRole): void
     {
         $this->authentication->check($user);
 
-        $iDataBaseCreateRole->createRole($customRoleName, $privilegeValue);
+        $iDataBaseCreateRole->createRole($customRoleName, $privilegeValue, $relatedRole);
     }
 
     public function deleteRole(DSAdmin $user, string $customRoleName, IDataBaseDeleteRole $iDataBaseDeleteRole): void
