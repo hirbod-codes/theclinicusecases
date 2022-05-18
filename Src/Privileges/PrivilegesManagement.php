@@ -37,14 +37,14 @@ class PrivilegesManagement
     {
         $this->authentication->check($readerUser);
 
-        return $targetUser::getUserPrivileges();
+        return $targetUser->getUserPrivileges();
     }
 
     public function getSelfPrivileges(DSUser $user): array
     {
         $this->authentication->check($user);
 
-        return $user::getUserPrivileges();
+        return $user->getUserPrivileges();
     }
 
     public function setUserPrivilege(DSAdmin $user, DSUser $targetUser, string $privilege, mixed $value, IPrivilege $ip): void

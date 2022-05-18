@@ -85,14 +85,15 @@ class PrivilegesManagementTest extends TestCase
     public function testDeleteRole(): void
     {
         $this->authentication->shouldReceive('check')->with($this->authenticated);
+        $customRoleName = $this->faker->lexify();
 
         /** @var IDataBaseDeleteRole|MockInterface $iDataBaseDeleteRole */
         $iDataBaseDeleteRole = Mockery::mock(IDataBaseDeleteRole::class);
         $iDataBaseDeleteRole
             ->shouldReceive('deleteRole')
-            ->with('custom');
+            ->with($customRoleName);
 
-        $result = $this->instantiate()->deleteRole($this->authenticated, 'custom', $iDataBaseDeleteRole);
+        $result = $this->instantiate()->deleteRole($this->authenticated, $customRoleName, $iDataBaseDeleteRole);
         $this->assertNull($result);
     }
 
@@ -100,7 +101,7 @@ class PrivilegesManagementTest extends TestCase
     {
         $this->authentication->shouldReceive('check')->with($this->authenticated);
 
-        $privileges = $this->dsUser::getUserPrivileges();
+        $privileges = $this->dsUser->getUserPrivileges();
 
         $array = $this->instantiate()->getUserPrivileges($this->authenticated, $this->dsUser);
 
@@ -117,7 +118,7 @@ class PrivilegesManagementTest extends TestCase
     {
         $this->authentication->shouldReceive('check')->with($this->dsUser);
 
-        $privileges = $this->dsUser::getUserPrivileges();
+        $privileges = $this->dsUser->getUserPrivileges();
 
         $array = $this->instantiate()->getSelfPrivileges($this->dsUser);
         $this->assertIsArray($array);
