@@ -7,11 +7,15 @@ use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSPatient;
 use TheClinicDataStructures\DataStructures\User\DSUser;
 use TheClinicDataStructures\DataStructures\User\ICheckAuthentication;
+use TheClinicDataStructures\DataStructures\User\Interfaces\IPrivilege;
 
 trait MakeAuthenticatable
 {
     private function makeAuthenticatable($admin = false): DSUser
     {
+        /** @var IPrivilege|MockInterface $iPrivilege */
+        $iPrivilege = Mockery::mock(IPrivilege::class);
+
         /** @var ICheckAuthentication|MockInterface $iCheckAuthentication */
         $iCheckAuthentication = Mockery::mock(ICheckAuthentication::class);
 
@@ -33,6 +37,7 @@ trait MakeAuthenticatable
         $address = $this->faker->address();
         $laserGrade = $this->faker->numerify() . '/' . $this->faker->numerify();
 
+        $constructArgs['iPrivilege'] = $iPrivilege;
         $constructArgs['iCheckAuthentication'] = $iCheckAuthentication;
         $constructArgs['orders'] = $orders;
 
