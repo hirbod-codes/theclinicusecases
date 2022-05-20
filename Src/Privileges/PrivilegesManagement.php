@@ -4,13 +4,12 @@ namespace TheClinicUseCases\Privileges;
 
 use TheClinicDataStructures\DataStructures\User\DSAdmin;
 use TheClinicDataStructures\DataStructures\User\DSUser;
-use TheClinicDataStructures\DataStructures\User\Interfaces\IPrivilege;
 use TheClinicUseCases\Accounts\Authentication;
-use TheClinicUseCases\Exceptions\Accounts\AdminTemptsToSetAdminPrivilege;
 use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Privileges\Interfaces\IDataBaseCreateRole;
 use TheClinicUseCases\Privileges\Interfaces\IDataBaseDeleteRole;
+use TheClinicUseCases\Privileges\Interfaces\IPrivilegeSetter;
 
 class PrivilegesManagement
 {
@@ -47,15 +46,11 @@ class PrivilegesManagement
         return $user->getUserPrivileges();
     }
 
-    public function setUserPrivilege(DSAdmin $user, DSUser $targetUser, string $privilege, mixed $value, IPrivilege $ip): void
+    public function setRolePrivilege(DSAdmin $user, string $roleName, array $privilegeValues, IPrivilegeSetter $ip): void
     {
         $this->authentication->check($user);
 
-        if ($targetUser instanceof DSAdmin && $targetUser->getUsername() !== $user->getUsername()) {
-            throw new AdminTemptsToSetAdminPrivilege();
-        }
-
-        $targetUser->setPrivilege($privilege, $value, $ip);
+        $ip->setPrivilege($roleName, $privilegeValues);
     }
 
     public function createRole(DSAdmin $user, string $customRoleName, array $privilegeValue, string $relatedRole, IDataBaseCreateRole $iDataBaseCreateRole): void
@@ -68,7 +63,7 @@ class PrivilegesManagement
     public function deleteRole(DSAdmin $user, string $customRoleName, IDataBaseDeleteRole $iDataBaseDeleteRole): void
     {
         if (in_array($customRoleName, DSUser::$roles)) {
-            throw new \InvalidArgumentException('Ypu can not delete this role, this is a business role.', 403);
+            throw new \InvalidArgumentException('You can not delete this role, this is a business role.', 403);
         }
 
         $this->authentication->check($user);

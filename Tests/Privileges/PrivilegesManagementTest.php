@@ -16,6 +16,7 @@ use TheClinicUseCases\Exceptions\Accounts\UserIsNotAuthorized;
 use TheClinicUseCases\Exceptions\PrivilegeNotFound;
 use TheClinicUseCases\Privileges\Interfaces\IDataBaseCreateRole;
 use TheClinicUseCases\Privileges\Interfaces\IDataBaseDeleteRole;
+use TheClinicUseCases\Privileges\Interfaces\IPrivilegeSetter;
 use TheClinicUseCases\Privileges\PrivilegesManagement;
 
 class PrivilegesManagementTest extends TestCase
@@ -130,29 +131,24 @@ class PrivilegesManagementTest extends TestCase
         }
     }
 
-    public function testSetUserPrivilege(): void
+    public function testSetRolePrivilege(): void
     {
         $privilege = "selfAccountRead";
+        $roleName = 'custom_role_name';
+        $privilegeValues = [$privilege => true];
 
-        /** @var IPrivilege|MockInterface $ip */
-        $ip = Mockery::mock(IPrivilege::class);
+        /** @var IPrivilegeSetter|MockInterface $ips */
+        $ips = Mockery::mock(IPrivilegeSetter::class);
+        $ips
+            ->shouldReceive('setPrivilege')
+            ->with($roleName, $privilegeValues);
 
         $this->authentication->shouldReceive('check')->with($this->authenticated);
 
-        /** @var DSUser|MockInterface $dsUser */
-        $dsUser = Mockery::mock(DSUser::class);
-        $dsUser->shouldReceive('setPrivilege')->with($privilege, false, $ip);
-
         $instance = $this->instantiate();
-        $result = $instance->setUserPrivilege($this->authenticated, $dsUser, $privilege, false, $ip);
+        $result = $instance->setRolePrivilege($this->authenticated, $roleName, $privilegeValues, $ips);
 
         $this->assertNull($result);
-
-        try {
-            $result = $instance->setUserPrivilege($this->authenticated, $this->makeAuthenticatable(true), $privilege, false, $ip);
-            throw new \RuntimeException('Failure!!!');
-        } catch (AdminTemptsToSetAdminPrivilege $th) {
-        }
     }
 
     public function testCheckBool(): void
